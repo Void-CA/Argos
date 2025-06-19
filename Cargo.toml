@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "argos-core",
+    "argos-cli",
+]
+resolver = "3"
