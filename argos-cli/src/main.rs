@@ -1,5 +1,9 @@
 use clap::{Parser, Subcommand};
-use argos_core::monitor_process; // Asegúrate de que este módulo exista y esté correctamente implementado
+use argos_core::process_monitor::{
+    monitor_process,
+    monitor_during_execution,
+};
+
 #[derive(Parser)]
 #[command(name = "argos")]
 #[command(version = "0.1.0")]
@@ -11,24 +15,69 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Supervisa un proceso
+    /// Muestra un snapshot del proceso
     Monitor {
+        /// ID del proceso (PID)
         #[arg(short, long)]
         pid: u32,
     },
-    /// Muestra historial de procesos
+    /// Realiza un muestreo durante varios segundos
+    Sample {
+        /// ID del proceso (PID)
+        #[arg(short, long)]
+        pid: u32,
+        /// Número de iteraciones
+        #[arg(long, default_value_t = 10)]
+        iterations: usize,
+        /// Intervalo entre muestras (milisegundos)
+        #[arg(short = 'i', long, default_value_t = 500)]
+        interval_ms: u64,
+    },
+    /// (Placeholder) Muestra historial de procesos
     History,
 }
 
 fn main() {
     let cli = Cli::parse();
+
     match cli.command {
         Commands::Monitor { pid } => {
-            println!("{}", monitor_process(pid));
-
+            match monitor_process(pid) {
+                Some(info) => {
+                    println!(
+                        "Nombre: {}\nEstado: {}\nCPU: {:.2}%\nRAM: {:.2} MB\nInicio: {}\nPID Padre: {:?}",
+                        info.name,
+                        info.state,
+                        info.cpu_usage,
+                        info.memory_mb,
+                        info.start_time,
+                        info.parent_pid,
+                    );
+                }
+                None => eprintln!("❌ No se encontró el proceso con PID {}", pid),
+            }
         }
+
+        Commands::Sample { pid, iterations, interval_ms } => {
+            println!(
+                "🔍 Muestreo del PID {} por {} iteraciones ({} ms c/u):\n",
+                pid, iterations, interval_ms
+            );
+            let samples = monitor_during_execution(pid, iterations, interval_ms);
+            if samples.is_empty() {
+                println!("❌ No se pudo obtener información del proceso.");
+                return;
+            }
+            for s in samples {
+                println!(
+                    " {:.2}s |  {:>8} KB |  {:5.2}%",
+                    s.timestamp, s.memory, s.cpu_usage
+                );
+            }
+        }
+
         Commands::History => {
-            println!("(TEST) Llamada a history");
+            println!("📦 Llamada a history (por implementar)");
         }
     }
 }
