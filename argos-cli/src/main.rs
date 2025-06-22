@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-
+use argos_core::monitor_process; // Asegúrate de que este módulo exista y esté correctamente implementado
 #[derive(Parser)]
 #[command(name = "argos")]
 #[command(version = "0.1.0")]
@@ -22,10 +22,10 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
-
     match cli.command {
         Commands::Monitor { pid } => {
-            println!("(TEST) Llamada a monitor con PID: {}", pid);
+            println!("{}", monitor_process(pid));
+
         }
         Commands::History => {
             println!("(TEST) Llamada a history");
