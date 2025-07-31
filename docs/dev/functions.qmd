@@ -1,0 +1,568 @@
+# Argos - Herramienta de Auditoría y Análisis de Recursos en Tiempo Real
+
+## Resumen Ejecutivo
+
+**Argos** es una solución integral de monitoreo y auditoría de sistemas que proporciona visibilidad completa sobre el comportamiento de procesos y el uso de recursos en tiempo real. Diseñada para administradores de sistemas, ingenieros de DevOps, y equipos de seguridad, Argos combina capacidades avanzadas de monitoreo con análisis inteligente para detectar anomalías, optimizar rendimiento y mantener la seguridad del sistema.
+
+## Introducción
+
+En el entorno actual de infraestructura crítica, la necesidad de monitoreo continuo y análisis detallado de recursos del sistema es fundamental. **Argos** aborda esta necesidad proporcionando una plataforma unificada que no solo monitorea el estado actual del sistema, sino que también mantiene un registro histórico completo para análisis forense y optimización proactiva.
+
+### Objetivos del Sistema
+
+**Argos** está diseñado para cumplir los siguientes objetivos estratégicos:
+
+1. **Supervisión Proactiva**: Detectar problemas de rendimiento antes de que afecten la operación crítica
+2. **Auditoría Completa**: Mantener un registro detallado de todas las actividades del sistema para cumplimiento y análisis forense
+3. **Análisis Inteligente**: Utilizar algoritmos avanzados para identificar patrones anómalos y tendencias de uso
+4. **Optimización de Recursos**: Proporcionar insights para mejorar la eficiencia y distribución de recursos
+5. **Seguridad Operacional**: Detectar actividades sospechosas y comportamientos potencialmente maliciosos
+
+### Áreas de Enfoque
+
+El sistema se estructura alrededor de cinco pilares fundamentales:
+
+- **Monitoreo en Tiempo Real**: Captura continua de métricas de sistema y procesos
+- **Análisis de Recursos**: Evaluación profunda del uso de CPU, memoria, I/O y red
+- **Auditoría de Procesos**: Seguimiento completo del ciclo de vida y comportamiento de procesos
+- **Detección de Anomalías**: Identificación automática de patrones inusuales o sospechosos
+- **Reportería y Análisis**: Generación de informes detallados y visualizaciones para toma de decisiones
+
+### Casos de Uso Principales
+
+**Argos** está optimizado para los siguientes escenarios:
+
+- **Centros de Datos**: Monitoreo de servidores críticos y cargas de trabajo
+- **Entornos de Desarrollo**: Análisis de rendimiento de aplicaciones en desarrollo
+- **Infraestructura Cloud**: Supervisión de instancias virtuales y contenedores
+- **Estaciones de Trabajo**: Monitoreo de equipos de usuario final para soporte técnico
+- **Análisis Forense**: Investigación post-incidente de actividades del sistema
+- **Optimización de Costos**: Identificación de recursos subutilizados o sobredimensionados
+
+## Arquitectura del Sistema
+
+### Componentes Principales
+
+**Argos** se compone de varios módulos especializados que trabajan en conjunto:
+
+1. **Motor de Recolección**: Captura datos de sistema operativo mediante APIs nativas
+2. **Procesador de Eventos**: Analiza y categoriza eventos del sistema en tiempo real
+3. **Motor de Almacenamiento**: Gestiona la persistencia de datos con optimización para consultas rápidas
+4. **Analizador de Patrones**: Detecta anomalías utilizando algoritmos de machine learning
+5. **Interfaz de Usuario**: Proporciona múltiples formas de interacción con el sistema
+6. **Motor de Alertas**: Sistema de notificaciones configurable y escalable
+
+### Requisitos del Sistema
+
+**Requisitos Mínimos:**
+- Procesador: 2 núcleos, 2.0 GHz
+- Memoria RAM: 2GB disponibles
+- Espacio en disco: 5GB para datos y logs
+- Sistema Operativo: Windows 10+, Linux (kernel 4.0+), macOS 10.14+
+
+**Requisitos Recomendados:**
+- Procesador: 4+ núcleos, 3.0+ GHz
+- Memoria RAM: 8GB+ disponibles
+- Espacio en disco: 50GB+ para análisis histórico extendido
+- Red: Conexión estable para modo servidor/cliente
+
+## Funcionalidades Principales
+
+### 1. Monitoreo en Tiempo Real
+
+#### Características Avanzadas de Monitoreo
+
+**Argos** proporciona una vista integral y en tiempo real del estado del sistema:
+
+- **Visualización Multidimensional**: 
+  - Vista de lista detallada con métricas por proceso
+  - Vista de árbol jerárquico mostrando relaciones padre-hijo
+  - Vista de gráficos temporales para análisis de tendencias
+  - Dashboard ejecutivo con métricas clave del sistema
+
+- **Información Detallada por Proceso**:
+  - **Identificación**: PID, PPID, nombre del proceso, ruta completa del ejecutable
+  - **Recursos**: Uso de CPU (%), memoria física y virtual (MB/GB), handles de archivos
+  - **Estado**: Estado actual (running, sleeping, zombie), prioridad, tiempo de CPU acumulado
+  - **Seguridad**: Usuario propietario, privilegios, contexto de seguridad
+  - **Red**: Conexiones activas, puertos abiertos, tráfico de datos
+
+- **Actualizaciones Inteligentes**:
+  - Intervalos configurables desde 0.5 segundos hasta 1 hora
+  - Actualización adaptativa basada en carga del sistema
+  - Modo de alta frecuencia para análisis crítico
+  - Pausas automáticas durante inactividad del usuario
+
+- **Capacidades de Filtrado Avanzado**:
+  - Filtros por expresiones regulares en nombres de proceso
+  - Filtros por rangos de uso de recursos (CPU > 80%, RAM > 1GB)
+  - Filtros por usuario, grupo, o contexto de seguridad
+  - Filtros temporales (procesos creados en últimas X horas)
+  - Filtros por estado del proceso o tipo de aplicación
+
+#### Métricas Especializadas
+
+- **Análisis de Rendimiento**:
+  - Tiempo de respuesta de aplicaciones
+  - Throughput de I/O por proceso
+  - Latencia de acceso a disco y red
+  - Eficiencia de uso de caché
+
+- **Análisis de Seguridad**:
+  - Procesos ejecutándose con privilegios elevados
+  - Cambios en permisos de archivos críticos
+  - Intentos de acceso no autorizados
+  - Procesos comunicándose con IPs externas
+
+### 2. Supervisión Integral del Sistema
+
+#### Monitoreo de Recursos del Sistema
+
+**Argos** proporciona una vista completa de todos los recursos del sistema:
+
+- **CPU y Procesamiento**:
+  - Uso total y por núcleo en tiempo real
+  - Distribución de carga entre núcleos
+  - Frecuencia de procesador y estados de energía
+  - Análisis de colas de procesos y tiempo de espera
+  - Detección de procesos consumiendo excesivos ciclos de CPU
+
+- **Memoria y Almacenamiento**:
+  - Memoria física: total, usada, disponible, cache
+  - Memoria virtual: swap usage, page faults
+  - Análisis de fragmentación de memoria
+  - Identificación de memory leaks potenciales
+  - Monitoreo de espacio en disco por partición
+
+- **I/O y Red**:
+  - Throughput de disco: lectura/escritura por segundo
+  - Latencia de operaciones de I/O
+  - Tráfico de red: bytes enviados/recibidos
+  - Conexiones de red activas y puertos en uso
+  - Análisis de bandwidth utilizado por proceso
+
+- **Estadísticas del Sistema**:
+  - Uptime del sistema y últimos reinicios
+  - Load average y tendencias de carga
+  - Número de handles de archivos abiertos
+  - Estadísticas de interrupciones del sistema
+  - Información de hardware y drivers
+
+#### Métricas Predictivas
+
+- **Análisis de Tendencias**:
+  - Proyección de uso de recursos basado en patrones históricos
+  - Identificación de ciclos de uso diarios, semanales, mensuales
+  - Predicción de posibles cuellos de botella
+  - Recomendaciones de optimización automáticas
+
+### 3. Sistema de Bitácora de Eventos Avanzado
+
+#### Registro Inteligente de Eventos
+
+**Argos** mantiene un registro detallado y categorizado de todos los eventos relevantes:
+
+**Eventos del Sistema**:
+- **Ciclo de Vida de Procesos**:
+  - Creación con detalles completos del proceso padre
+  - Terminación con código de salida y duración
+  - Cambios de estado (suspensión, reanudación)
+  - Fork/exec operations con argumentos completos
+
+- **Eventos de Recursos**:
+  - Picos de uso de CPU superiores a umbrales configurables
+  - Asignación masiva de memoria por proceso
+  - Operaciones de I/O intensivas
+  - Cambios significativos en uso de red
+
+- **Eventos de Seguridad**:
+  - Elevación de privilegios
+  - Acceso a archivos del sistema críticos
+  - Intentos de conexión de red sospechosos
+  - Modificaciones en configuración del sistema
+
+**Características del Sistema de Logging**:
+
+- **Metadatos Enriquecidos**:
+  - Timestamp con precisión de microsegundos
+  - Correlación de eventos relacionados
+  - Contexto completo del sistema en el momento del evento
+  - Checksum de archivos ejecutables para integridad
+
+- **Almacenamiento Optimizado**:
+  - Base de datos SQLite con índices optimizados para consultas rápidas
+  - Particionamiento automático por fecha/tamaño
+  - Compresión de datos históricos
+  - Exportación automática de logs antiguos
+
+- **Integridad y Auditabilidad**:
+  - Firma digital de logs para prevenir manipulación
+  - Backup automático de logs críticos
+  - Integración con sistemas SIEM externos
+  - Cumplimiento con estándares de auditoría (ISO 27001, SOX)
+
+### 4. Sistema de Auditoría y Detección de Anomalías
+
+#### Detección Inteligente de Patrones
+
+**Argos** utiliza algoritmos avanzados para identificar comportamientos anómalos:
+
+**Detección Basada en Umbrales**:
+- **Umbrales Dinámicos**: Ajuste automático basado en patrones históricos
+- **Umbrales Contextuales**: Diferentes límites según horario, día de la semana
+- **Umbrales Compuestos**: Combinación de múltiples métricas para mayor precisión
+- **Umbrales Predictivos**: Alertas antes de que se alcancen límites críticos
+
+**Detección de Anomalías Avanzada**:
+- **Análisis de Comportamiento**:
+  - Detección de procesos que cambian patrones de uso repentinamente
+  - Identificación de aplicaciones que acceden a recursos inusuales
+  - Análisis de patrones de comunicación de red anómalos
+  - Detección de procesos que ejecutan comandos sospechosos
+
+- **Machine Learning Integrado**:
+  - Algoritmos de clustering para identificar procesos similares
+  - Detección de outliers en patrones de uso
+  - Análisis de series temporales para predecir comportamientos futuros
+  - Aprendizaje continuo de patrones normales del sistema
+
+**Categorización de Alertas**:
+- **Críticas**: Amenazas inmediatas a la seguridad o estabilidad
+- **Altas**: Problemas que requieren atención próxima
+- **Medias**: Situaciones que deben monitorearse
+- **Informativas**: Cambios notables en el comportamiento del sistema
+
+#### Análisis Forense y Histórico
+
+- **Línea de Tiempo de Eventos**:
+  - Reconstrucción cronológica de actividades del sistema
+  - Correlación de eventos para identificar cadenas de causa-efecto
+  - Visualización de patrones de actividad por período
+  - Análisis de comportamiento de procesos específicos a lo largo del tiempo
+
+- **Análisis de Causa Raíz**:
+  - Identificación automática de procesos que causan problemas de rendimiento
+  - Análisis de dependencias entre procesos
+  - Identificación de recursos compartidos causando conflictos
+  - Sugerencias de resolución basadas en casos similares
+
+### 5. Interfaces de Usuario Avanzadas
+
+#### Interfaz de Línea de Comandos (CLI)
+
+**Argos CLI** proporciona acceso completo a todas las funcionalidades:
+
+**Comandos Principales**:
+```bash
+# Monitoreo básico
+argos monitor --refresh 5s --filter "cpu>80"
+argos status --detailed --export json
+
+# Análisis histórico
+argos history --from "2025-01-01" --to "2025-01-31"
+argos analyze --process chrome.exe --metric memory
+
+# Gestión de alertas
+argos alerts --active --severity critical
+argos rules --create --condition "cpu>90" --action email
+
+# Exportación de datos
+argos export --format csv --date-range "last-week"
+argos report --template performance --output pdf
+```
+
+**Características Avanzadas**:
+- Autocompletado inteligente de comandos
+- Formatos de salida múltiples (JSON, CSV, XML, YAML)
+- Scripting avanzado con pipes y filtros
+- Integración con herramientas de automatización
+
+#### Interfaz Textual Interactiva (TUI)
+
+**Argos TUI** ofrece una experiencia rica en terminal:
+
+- **Dashboard Principal**:
+  - Vista de métricas clave en tiempo real
+  - Gráficos ASCII de tendencias
+  - Lista de procesos con ordenamiento dinámico
+  - Panel de alertas activas
+
+- **Navegación Avanzada**:
+  - Navegación por teclado optimizada
+  - Ventanas múltiples y paneles divididos
+  - Búsqueda en tiempo real con resaltado
+  - Historial de comandos y sesiones guardadas
+
+- **Personalización**:
+  - Temas de colores configurables
+  - Layouts de pantalla personalizables
+  - Atajos de teclado configurables
+  - Perfiles de usuario para diferentes casos de uso
+
+## Funcionalidades Avanzadas y Planificadas
+
+### Funcionalidades de Control de Procesos
+
+#### Gestión Activa de Procesos
+**Argos** evolucionará para incluir capacidades de control directo sobre procesos del sistema:
+
+- **Control Granular de Procesos**:
+  - Suspensión temporal de procesos sin terminar la ejecución
+  - Reanudación controlada de procesos suspendidos
+  - Terminación forzada con opciones de cleanup
+  - Cambio de prioridad de procesos en tiempo real
+  - Limitación de recursos (CPU throttling, memory caps)
+
+- **Gestión de Grupos de Procesos**:
+  - Control de grupos de procesos relacionados
+  - Políticas de gestión automática basadas en reglas
+  - Asignación de recursos por grupos de trabajo
+  - Control de afinidad de CPU por aplicación
+
+- **Automatización de Respuestas**:
+  - Acciones automáticas basadas en umbrales
+  - Scripts de respuesta a incidentes personalizables
+  - Integración con sistemas de orquestación (Kubernetes, Docker)
+  - Recuperación automática de servicios críticos
+
+#### Políticas de Seguridad
+- **Control de Acceso Avanzado**:
+  - Prevención de ejecución de procesos no autorizados
+  - Sandboxing automático de procesos sospechosos  
+  - Cuarentena temporal de aplicaciones problemáticas
+  - Integración con sistemas antivirus y EDR
+
+### Exportación y Análisis de Datos
+
+#### Capacidades de Exportación Avanzada
+
+**Argos** proporcionará múltiples formatos y métodos de exportación:
+
+- **Formatos de Exportación**:
+  - **CSV**: Para análisis en Excel, R, Python pandas
+  - **JSON**: Para integración con APIs y sistemas web
+  - **XML**: Para compatibilidad con sistemas empresariales legacy
+  - **Parquet**: Para análisis de big data con Apache Spark
+  - **InfluxDB Line Protocol**: Para integración con bases de datos de series temporales
+
+- **Conectores Empresariales**:
+  - **Splunk**: Conector nativo para indexación y búsqueda
+  - **Elasticsearch**: Integración para análisis de logs distribuidos
+  - **Grafana**: Dashboards en tiempo real con métricas personalizadas
+  - **Tableau/Power BI**: Conectores para visualización empresarial
+  - **Prometheus**: Métricas para monitoreo de infraestructura
+
+#### Reportería Empresarial
+
+- **Reportes Automáticos**:
+  - **Reportes de Cumplimiento**: Para auditorías SOX, HIPAA, PCI-DSS
+  - **Reportes de Rendimiento**: Análisis de KPIs del sistema
+  - **Reportes de Seguridad**: Incidentes y anomalías detectadas
+  - **Reportes Ejecutivos**: Resúmenes de alto nivel para management
+
+- **Análisis de Tendencias**:
+  - Comparaciones período a período (MoM, YoY)
+  - Identificación de patrones estacionales
+  - Predicción de necesidades de recursos futuras
+  - Análisis de costo-beneficio de optimizaciones
+
+### Inteligencia Artificial y Machine Learning
+
+#### Detección Avanzada de Anomalías
+
+**Argos** integrará capacidades de IA para análisis predictivo:
+
+- **Algoritmos de Machine Learning**:
+  - **Isolation Forest**: Para detección de outliers en comportamiento
+  - **LSTM Neural Networks**: Para predicción de patrones temporales
+  - **Random Forest**: Para clasificación de procesos normales vs anómalos
+  - **K-means Clustering**: Para agrupación de comportamientos similares
+
+- **Análisis Predictivo**:
+  - Predicción de fallos de sistema basado en patrones históricos
+  - Identificación temprana de ataques de seguridad
+  - Predicción de necesidades de escalamiento de recursos
+  - Detección de degradación gradual de rendimiento
+
+#### Aprendizaje Continuo
+- **Entrenamiento Automático**: El sistema aprende de patrones locales específicos
+- **Feedback Loop**: Mejora continua basada en validación de alertas
+- **Modelos Personalizados**: Adaptación a entornos específicos de cada organización
+
+### Conectividad y Integración Empresarial
+
+#### API REST Completa
+
+**Argos** proporcionará una API RESTful completa para integración:
+
+```json
+{
+  "endpoints": {
+    "processes": {
+      "GET /api/v1/processes": "Lista todos los procesos",
+      "GET /api/v1/processes/{pid}": "Detalles de proceso específico",
+      "POST /api/v1/processes/{pid}/control": "Control de proceso"
+    },
+    "metrics": {
+      "GET /api/v1/metrics/system": "Métricas del sistema",
+      "GET /api/v1/metrics/historical": "Datos históricos",
+      "POST /api/v1/metrics/query": "Consultas personalizadas"
+    },
+    "alerts": {
+      "GET /api/v1/alerts": "Alertas activas",
+      "POST /api/v1/alerts/rules": "Crear reglas de alerta",
+      "PUT /api/v1/alerts/{id}/acknowledge": "Confirmar alerta"
+    }
+  }
+}
+```
+
+#### Interfaz Web Moderna
+
+- **Dashboard Interactivo**:
+  - Visualizaciones en tiempo real con D3.js
+  - Dashboards personalizables por usuario/rol
+  - Alertas en tiempo real con WebSockets
+  - Responsive design para dispositivos móviles
+
+- **Características Avanzadas**:
+  - Single Sign-On (SSO) con SAML/OAuth
+  - Control de acceso basado en roles (RBAC)
+  - Audit trail completo de acciones de usuarios
+  - Temas personalizables y branding corporativo
+
+#### Modo Servidor Distribuido
+
+- **Arquitectura Escalable**:
+  - Despliegue en múltiples nodos para alta disponibilidad
+  - Balanceador de carga integrado
+  - Replicación automática de datos críticos
+  - Failover automático en caso de fallos
+
+- **Gestión Centralizada**:
+  - Monitoreo de múltiples sistemas desde consola central
+  - Políticas globales aplicables a toda la infraestructura
+  - Correlación de eventos entre múltiples sistemas
+  - Dashboards agregados para vista empresarial
+
+### Seguridad y Cumplimiento
+
+#### Características de Seguridad Avanzadas
+
+- **Cifrado End-to-End**:
+  - Comunicaciones cifradas con TLS 1.3
+  - Almacenamiento de datos cifrado en reposo
+  - Gestión segura de llaves con HSM
+  - Rotación automática de credenciales
+
+- **Auditoría y Cumplimiento**:
+  - Logs inmutables con blockchain
+  - Cumplimiento con GDPR para datos personales
+  - Certificaciones SOC 2 Type II
+  - Integración con frameworks de cumplimiento
+
+#### Detección de Amenazas
+
+- **Behavioral Analysis**:
+  - Detección de procesos maliciosos por comportamiento
+  - Análisis de patrones de comunicación sospechosos
+  - Identificación de técnicas MITRE ATT&CK
+  - Correlación con threat intelligence feeds
+
+---
+
+## Roadmap de Implementación
+
+### Fase 1: Core Funcionalidades (Trimestre 1)
+- ✅ Monitoreo básico en tiempo real
+- ✅ CLI básica y TUI
+- ✅ Sistema de logging fundamental
+- ✅ Base de datos SQLite
+
+### Fase 2: Funcionalidades Avanzadas (Trimestre 2)
+- 🔄 Detección de anomalías básica
+- 🔄 API REST inicial
+- 🔄 Exportación de datos múltiples formatos
+- 🔄 Interfaz web básica
+
+### Fase 3: Inteligencia y Automatización (Trimestre 3)
+- 📋 Machine Learning para detección de anomalías
+- 📋 Control automático de procesos
+- 📋 Integración con sistemas externos
+- 📋 Reportería avanzada
+
+### Fase 4: Escalabilidad Empresarial (Trimestre 4)
+- 📋 Modo servidor distribuido
+- 📋 Alta disponibilidad y clustering
+- 📋 Características de seguridad avanzadas
+- 📋 Certificaciones de cumplimiento
+
+## Consideraciones Técnicas
+
+### Tecnologías Seleccionadas
+
+- **Backend**: Rust para rendimiento y seguridad
+- **Base de Datos**: SQLite para embedded, PostgreSQL para servidor
+- **Frontend Web**: React/TypeScript con Material-UI
+- **API**: REST con OpenAPI 3.0 specification
+- **Monitoreo**: Integration con Prometheus/Grafana stack
+
+### Métricas de Rendimiento Objetivas
+
+- **Overhead del Sistema**: < 2% CPU, < 100MB RAM en modo normal
+- **Latencia de Respuesta**: < 100ms para consultas simples
+- **Throughput**: > 10,000 eventos/segundo procesados
+- **Retención de Datos**: 90 días por defecto, configurable hasta 7 años
+- **Disponibilidad**: 99.9% uptime en modo servidor
+
+### Consideraciones de Escalabilidad
+
+- **Sistemas Pequeños**: 1-10 procesos monitoreados
+- **Sistemas Medianos**: 100-1,000 procesos monitoreados  
+- **Sistemas Grandes**: 10,000+ procesos monitoreados
+- **Modo Distribuido**: Hasta 100,000+ procesos en múltiples nodos
+
+## Notas de Implementación
+
+### Principios de Desarrollo
+
+> **Seguridad por Diseño**: Todas las funcionalidades se implementan con seguridad como prioridad principal, incluyendo validación de entrada, control de acceso y cifrado de datos sensibles.
+>
+> **Rendimiento Optimizado**: El sistema está diseñado para tener un impacto mínimo en el rendimiento del sistema monitoreado, utilizando técnicas de sampling inteligente y procesamiento asíncrono.
+>
+> **Modularidad**: La arquitectura modular permite la activación/desactivación de componentes según las necesidades específicas de cada entorno.
+
+### Prioridades de Desarrollo
+
+**Fase Crítica (MVP)**:
+1. ✅ **Monitoreo Básico**: Funcionalidades de monitoreo en tiempo real (Secciones 1-2)
+2. ✅ **Logging Fundamental**: Sistema de bitácora básico (Sección 3)
+3. ✅ **Interfaces Básicas**: CLI y TUI funcionales (Sección 5)
+4. 🔄 **Detección Simple**: Alertas basadas en umbrales básicos (Sección 4)
+
+**Fase de Expansión**:
+- 📋 Funcionalidades avanzadas de análisis y ML
+- 📋 Interfaces web y APIs REST
+- 📋 Integraciones empresariales
+- 📋 Características de alta disponibilidad
+
+### Consideraciones de Arquitectura
+
+**Extensibilidad**: Las funcionalidades opcionales se implementarán como plugins o módulos independientes que pueden cargarse dinámicamente sin afectar el núcleo del sistema.
+
+**Retrocompatibilidad**: Las nuevas versiones mantendrán compatibilidad con configuraciones y datos de versiones anteriores a través de migraciones automáticas.
+
+**Testing**: Cada componente incluirá una suite completa de tests unitarios, de integración y de rendimiento para garantizar la estabilidad del sistema.
+
+### Entrega y Despliegue
+
+- **Empaquetado**: Binarios únicos sin dependencias externas para facilitar despliegue
+- **Instalación**: Instaladores nativos para Windows, macOS y Linux
+- **Configuración**: Configuración mediante archivos YAML o variables de entorno
+- **Documentación**: Documentación completa de usuario y API con ejemplos prácticos
+
+---
+
+**Versión del Documento**: 2.0  
+**Última Actualización**: Junio 2025  
+**Próxima Revisión**: Septiembre 2025

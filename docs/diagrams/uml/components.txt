@@ -1,0 +1,15 @@
+@startuml
+package "Argos CLI" {
+    [CLI Principal] --> [Core Argos]
+}
+
+package "Core Argos" {
+    [Core Argos] --> [Monitor]
+    [Core Argos] --> [Bitácora]
+    [Core Argos] --> [Alerta]
+}
+
+[Monitor] --> [sysinfo]
+[Bitácora] --> [SQLite / JSON]
+[Alerta] --> [Umbral de comportamiento]
+@enduml

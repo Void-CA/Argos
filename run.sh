@@ -1,1 +1,1 @@
-cargo run sample --pid $1
+cargo run monitor --pid $1

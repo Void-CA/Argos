@@ -3,7 +3,9 @@ use argos_core::process_monitor::{
     monitor_process,
     monitor_during_execution,
 };
-
+use argos_core::db::process::insert_process;
+use argos_core::db::manager::establish_connection;
+use dotenvy;
 #[derive(Parser)]
 #[command(name = "argos")]
 #[command(version = "0.1.0")]
@@ -26,9 +28,11 @@ enum Commands {
         /// ID del proceso (PID)
         #[arg(short, long)]
         pid: u32,
+
         /// Número de iteraciones
         #[arg(long, default_value_t = 10)]
         iterations: usize,
+
         /// Intervalo entre muestras (milisegundos)
         #[arg(short = 'i', long, default_value_t = 500)]
         interval_ms: u64,
@@ -38,12 +42,19 @@ enum Commands {
 }
 
 fn main() {
+    dotenvy::dotenv().ok();
     let cli = Cli::parse();
 
     match cli.command {
         Commands::Monitor { pid } => {
             match monitor_process(pid) {
                 Some(info) => {
+                
+                    let mut conn = establish_connection();
+                    let process = info.clone().into();
+                    if let Err(e) = insert_process(&mut conn, &process) {
+                        eprintln!("❌ Error al insertar el proceso en la base de datos: {}", e);
+                    }
                     println!(
                         "Nombre: {}\nEstado: {}\nCPU: {:.2}%\nRAM: {:.2} MB\nInicio: {}\nPID Padre: {:?}",
                         info.name,
@@ -51,7 +62,7 @@ fn main() {
                         info.cpu_usage,
                         info.memory_mb,
                         info.start_time,
-                        info.parent_pid,
+                        info.parent_pid.unwrap_or(0),
                     );
                 }
                 None => eprintln!("❌ No se encontró el proceso con PID {}", pid),

@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS samples;
+DROP TABLE IF EXISTS log_sessions;
+DROP TABLE IF EXISTS processes;
