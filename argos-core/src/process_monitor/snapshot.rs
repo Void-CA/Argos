@@ -1,10 +1,9 @@
-use sysinfo::{System,};
+use sysinfo::{System};
 use crate::process_monitor::types::ProcessInfo;
 
 pub fn monitor_process(pid: u32) -> Option<ProcessInfo> {
     let mut system = System::new_all();
     system.refresh_process(sysinfo::Pid::from_u32(pid));
-
     if let Some(process) = system.process(sysinfo::Pid::from_u32(pid)) {
         Some(ProcessInfo {
             pid,
