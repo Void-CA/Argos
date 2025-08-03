@@ -1,4 +1,5 @@
 use argos_core::process_monitor::{monitor_process, monitor_during_execution};
+use argos_core::users::utils::get_user_by_id;
 use argos_core::db::process::insert_process;
 use argos_core::db::manager::establish_connection;
 use crate::cli::{Commands, ConfigAction};
@@ -6,6 +7,10 @@ use crate::output::OutputFormatter;
 use crate::error::{CliResult, CliError};
 use crate::config::Config;
 use std::fs;
+
+
+#[derive(Debug)]
+
 
 pub struct CommandHandler {
     formatter: OutputFormatter,
@@ -32,8 +37,8 @@ impl CommandHandler {
             Commands::History { pid, limit, format } => {
                 self.handle_history(pid, limit, &format)
             }
-            Commands::List { name, user, sort_by, format } => {
-                self.handle_list(name.as_deref(), user.as_deref(), &sort_by, &format)
+            Commands::List { name, user, sort_by, format , output} => {
+                self.handle_list(name.as_deref(), user.as_deref(), &sort_by, &format, output.as_deref())
             }
             Commands::Config { action } => {
                 self.handle_config(action)
@@ -104,13 +109,108 @@ impl CommandHandler {
         Ok(())
     }
 
-    fn handle_list(&self, _name_filter: Option<&str>, _user_filter: Option<&str>, _sort_by: &str, format: &str) -> CliResult<()> {
-        // TODO: Implementar listado de procesos
-        match format {
-            "text" => println!("📋 Lista de procesos (por implementar)"),
-            "json" => println!("{{\"message\": \"Lista por implementar\"}}"),
-            "csv" => println!("message\nLista por implementar"),
-            _ => return Err(CliError::format_error(format!("Formato no soportado: {}", format))),
+    fn handle_list(
+        &self,
+        name_filter: Option<&str>,
+        user_filter: Option<&str>,
+        sort_by: &str,
+        format: &str,
+        output_file: Option<&str>,
+    ) -> CliResult<()> {
+
+        let mut system = sysinfo::System::new_all();
+        system.refresh_processes();
+
+        // Recolectar procesos
+        let mut processes: Vec<_> = system.processes().values().collect();
+
+        // Filtrar por nombre
+        if let Some(name) = name_filter {
+            processes.retain(|p| p.name().contains(name));
+        }
+
+        // Filtrar por usuario
+        if let Some(user) = user_filter {
+            processes.retain(|p| {
+                p.user_id()
+                    .and_then(|uid| get_user_by_id(uid.clone()))
+                    .map(|u| u.name.contains(user))
+                    .unwrap_or(false)
+            });
+        }
+
+        // Ordenar
+        match sort_by {
+            "cpu" => processes.sort_by(|a, b| b.cpu_usage().partial_cmp(&a.cpu_usage()).unwrap()),
+            "memory" => processes.sort_by(|a, b| b.memory().cmp(&a.memory())),
+            "name" => processes.sort_by(|a, b| a.name().cmp(b.name())),
+            "pid" => processes.sort_by(|a, b| a.pid().cmp(&b.pid())),
+            _ => {}
+        }
+
+        // Construir ProcessRow para cada proceso
+        #[derive(serde::Serialize)]
+        struct ProcessRow {
+            pid: u32,
+            name: String,
+            cpu_usage: f32,
+            memory_mb: f64,
+            user: String,
+            groups: String,
+            state: String,
+            exe: String,
+            cmd: String,
+            start_time: u64,
+            parent_pid: Option<u32>,
+            virtual_memory_mb: f64,
+            read_disk_usage: f64,
+            write_disk_usage: f64,
+        }
+
+        
+        let rows: Vec<ProcessRow> = processes.iter().map(|p| {
+
+            let myuser = p.user_id().and_then(|uid| get_user_by_id(uid.clone()));
+            let user_name = myuser.as_ref().map(|u| u.name.as_str()).unwrap_or("-").to_string();
+            let groups = myuser.as_ref().map(|u| u.groups.join(",")).unwrap_or_else(|| "-".to_string());
+            let state = format!("{:?}", p.status());
+            let exe = p.exe().map(|path| path.display().to_string()).unwrap_or_else(|| "-".to_string());
+            let cmd = p.cmd().join(" ");
+            let start_time = p.start_time();
+            let parent_pid = p.parent().map(|pp| pp.as_u32());
+            let virtual_memory_mb = p.virtual_memory() as f64 / 1024.0;
+            let read_disk_usage = p.disk_usage().total_read_bytes as f64 / 1024.0;
+            let write_disk_usage = p.disk_usage().total_written_bytes as f64 / 1024.0;
+
+            ProcessRow {
+                pid: p.pid().as_u32(),
+                name: p.name().to_string(),
+                cpu_usage: p.cpu_usage(),
+                memory_mb: p.memory() as f64 / 1024.0,
+                read_disk_usage,
+                write_disk_usage,
+                user: user_name,
+                groups,
+                state,
+                exe,
+                cmd,
+                start_time,
+                parent_pid,
+                virtual_memory_mb,
+                
+            }
+        }).collect();
+
+        // Delegar el formateo a OutputFormatter
+        let output = self.formatter.format_process_list(&rows, format)?;
+        if let Some(file_path) = output_file {
+            fs::write(file_path, &output)
+                .map_err(|e| CliError::io_error(format!("Error al escribir archivo: {}", e)))?;
+            if format == "text" {
+                println!("✅ Resultados guardados en: {}", file_path);
+            }
+        } else {
+            println!("{}", output);
         }
         Ok(())
     }

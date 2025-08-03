@@ -3,9 +3,57 @@ use argos_core::process_monitor::types::Sample;
 use serde_json;
 use crate::error::{CliResult, CliError, ErrorKind};
 
+#[derive(Debug)]
 pub struct OutputFormatter;
 
 impl OutputFormatter {
+
+    pub fn format_process_list<T: serde::Serialize>(&self, rows: &[T], format: &str) -> CliResult<String> {
+        match format {
+            "json" => serde_json::to_string_pretty(rows)
+                .map_err(|e| CliError::format_error(format!("Error al serializar JSON: {}", e))),
+            "csv" => self.format_process_list_csv(rows),
+            "text" => Ok(self.format_process_list_text(rows)),
+            _ => Err(CliError::format_error(format!("Formato no soportado: {}", format))),
+        }
+    }
+
+    fn format_process_list_text<T: serde::Serialize>(&self, rows: &[T]) -> String {
+        // Usar headers y filas dinámicamente si quieres, aquí ejemplo fijo para ProcessRow
+        let mut out = String::from(
+            "PID      Nombre                CPU %    RAM MB   Usuario         Grupos         Estado      Ruta Ejecutable         CMD                      Inicio     Padre  VMEM   Hilos Prioridad\n"
+        );
+        for row in rows {
+            let v = serde_json::to_value(row).unwrap_or_default();
+            // Usar serde_json para mapear a Value y extraer campos
+            let pid = v.get("pid").and_then(|v| v.as_u64()).unwrap_or(0);
+            let name = v.get("name").and_then(|v| v.as_str()).unwrap_or("-");
+            let cpu = v.get("cpu_usage").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let mem = v.get("memory_mb").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let user = v.get("user").and_then(|v| v.as_str()).unwrap_or("-");
+            let groups = v.get("groups").and_then(|v| v.as_str()).unwrap_or("-");
+            let state = v.get("state").and_then(|v| v.as_str()).unwrap_or("-");
+            let start = v.get("start_time").and_then(|v| v.as_u64()).unwrap_or(0);
+            let ppid = v.get("parent_pid").and_then(|v| v.as_u64()).unwrap_or(0);
+            let vmem = v.get("virtual_memory_mb").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let read = v.get("read_disk_usage").and_then(|v| v.as_f64()).unwrap_or(0.0);
+
+            out.push_str(&format!(
+                "{:<8} {:<20} {:<8.2} {:<8.2} {:<15} {:<12} {:<10} {:<10} {:<6} {:<6} {:<6}\n",
+                pid, name, cpu, mem, user, groups, state, start, ppid, vmem, read,
+            ));
+        }
+        out
+    }
+
+    fn format_process_list_csv<T: serde::Serialize>(&self, rows: &[T]) -> CliResult<String> {
+        let mut wtr = csv::Writer::from_writer(vec![]);
+        for row in rows {
+            wtr.serialize(row).map_err(|e| CliError::format_error(format!("Error al serializar CSV: {}", e)))?;
+        }
+        let data = wtr.into_inner().map_err(|e| CliError::format_error(format!("Error al finalizar CSV: {}", e)))?;
+        String::from_utf8(data).map_err(|e| CliError::format_error(format!("Error UTF-8 en CSV: {}", e)))
+    }
     pub fn new() -> Self {
         Self
     }

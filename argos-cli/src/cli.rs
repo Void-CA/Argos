@@ -80,6 +80,9 @@ pub enum Commands {
         /// Formato de salida (text, json, csv)
         #[arg(short, long, default_value = "text")]
         format: String,
+
+        #[arg(short, long)]
+        output: Option<String>,
     },
     
     /// Configuración del sistema
