@@ -81,6 +81,7 @@ pub enum Commands {
         #[arg(short, long, default_value = "text")]
         format: String,
 
+        /// Archivo de salida (opcional)
         #[arg(short, long)]
         output: Option<String>,
     },
@@ -91,11 +92,57 @@ pub enum Commands {
         action: ConfigAction,
     },
 
+    /// Muestra información en tiempo real de un proceso
     Live {
         /// ID del proceso (PID)
         #[arg(short, long)]
         pid: u32,
     },
+
+    /// Comparacion entre dos procesos
+    Compare {
+        /// ID del primer proceso (PID)
+        #[arg(short, long)]
+        pid1: u32,
+
+        /// ID del segundo proceso (PID)
+        #[arg(short, long)]
+        pid2: u32,
+    },
+
+    /// Genera logs y reportes de auditoría
+    Watchdog {
+        /// ID del proceso a monitorear (PID)
+        #[arg(short, long)]
+        pid: u32,
+
+        /// Umbral de CPU para activar la alerta
+        #[arg(long, default_value_t = 80)]
+        cpu_over: u8,
+
+        /// Umbral de memoria para activar la alerta
+        #[arg(long, default_value_t = 80)]
+        memory_over: u8,
+
+        /// Acción a realizar cuando se exceden los umbrales
+        #[arg(long)]
+        on_exceed: Option<String>,
+
+        /// Intervalo de tiempo para verificar los umbrales (en milisegundos)
+        #[arg(long, default_value_t = 1000)]
+        interval: u64,
+    },
+
+    /// Etiquetado de procesos
+    Tag {
+        /// Nombre de la etiqueta
+        #[arg(short, long)]
+        name: String,
+
+        /// ID del proceso (PID)
+        #[arg(short, long)]
+        pid: u32,
+    }
 }
 
 #[derive(Subcommand)]

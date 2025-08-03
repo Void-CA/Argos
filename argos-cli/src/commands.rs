@@ -47,6 +47,15 @@ impl CommandHandler {
             Commands::Live {pid} => {
                 self.handle_live(pid)
             }
+            Commands::Compare {pid1, pid2} => {
+                self.handle_compare(pid1, pid2)
+            }
+            Commands::Watchdog { pid, cpu_over, memory_over, on_exceed, interval } => {
+                self.handle_watchdog(pid, cpu_over, memory_over, on_exceed, interval)
+            }
+            Commands::Tag { name, pid } => {
+                self.handle_tag(&name, pid)
+            }
             Commands::Config { action } => {
                 self.handle_config(action)
             }
@@ -223,6 +232,24 @@ fn handle_live(&self, pid: u32) -> CliResult<()> {
         thread::sleep(Duration::from_millis(200));
     }
 
+    Ok(())
+}
+
+fn handle_compare(&self, pid1: u32, pid2: u32) -> CliResult<()> {
+    // Implementar la lógica para comparar procesos usando pid1 y pid2
+    println!("Comparando procesos: {} y {}", pid1, pid2);
+    Ok(())
+}
+fn handle_watchdog(&self, pid: u32, cpu_over: u8, memory_over: u8, on_exceed: Option<String>, interval: u64) -> CliResult<()> {
+    // Implementar la lógica para el watchdog
+    Ok(())
+}
+fn handle_tag(&self, name: &str, pid: u32) -> CliResult<()> {
+    // Implementar la lógica para etiquetar procesos
+    // Por ahora, solo imprimimos un mensaje
+    println!("Etiqueta '{}' aplicada al proceso con PID {}", name, pid);
+    
+    // Aquí podrías guardar la etiqueta en una base de datos o archivo si es necesario
     Ok(())
 }
 }

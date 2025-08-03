@@ -60,8 +60,6 @@ impl fmt::Display for CliError {
     }
 }
 
-impl std::error::Error for CliError {}
-
 // Implementaciones de From para conversión automática de errores
 impl From<String> for CliError {
     fn from(msg: String) -> Self {
