@@ -90,6 +90,12 @@ pub enum Commands {
         #[command(subcommand)]
         action: ConfigAction,
     },
+
+    Live {
+        /// ID del proceso (PID)
+        #[arg(short, long)]
+        pid: u32,
+    },
 }
 
 #[derive(Subcommand)]

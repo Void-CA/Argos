@@ -8,7 +8,10 @@ use argos_export::{ProcessRow, SampleRow, IntoSampleRow};
 use crate::error::{CliResult, CliError};
 use crate::config::Config;
 use std::fs;
-
+use std::io::{self, Write};
+use std::thread;
+use std::time::Duration;
+use ctrlc;
 
 #[derive(Debug)]
 
@@ -40,6 +43,9 @@ impl CommandHandler {
             }
             Commands::List { name, user, sort_by, format , output} => {
                 self.handle_list(name.as_deref(), user.as_deref(), &sort_by, &format, output.as_deref())
+            }
+            Commands::Live {pid} => {
+                self.handle_live(pid)
             }
             Commands::Config { action } => {
                 self.handle_config(action)
@@ -181,6 +187,42 @@ impl CommandHandler {
             println!("⚙️  Configuración reseteada a valores por defecto");
         }
     }
+    Ok(())
+}
+
+fn handle_live(&self, pid: u32) -> CliResult<()> {
+    use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+
+    // Bandera para controlar la interrupción del loop
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+
+    // Ctrl+C para salir del monitoreo
+    ctrlc::set_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    }).expect("No se pudo establecer el handler de Ctrl+C");
+
+    while running.load(Ordering::SeqCst) {
+        sysinfo::System::new_all().refresh_processes();
+        // Refresca la información del proceso
+        let info = match monitor_process(pid) {
+            Some(i) => i,
+            None => {
+                eprintln!("Proceso con PID {} no encontrado o finalizado.", pid);
+                break;
+            }
+        };
+
+        // Limpia la terminal para una vista en vivo
+        print!("\x1B[2J\x1B[1;1H"); // ANSI escape codes para limpiar
+        io::stdout().flush().unwrap();
+
+        let output = self.formatter.format_process_info(&info, "csv")?;
+        println!("{}", output);
+
+        thread::sleep(Duration::from_millis(200));
+    }
+
     Ok(())
 }
 }
