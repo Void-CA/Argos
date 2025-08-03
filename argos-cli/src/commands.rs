@@ -4,6 +4,7 @@ use argos_core::db::process::insert_process;
 use argos_core::db::manager::establish_connection;
 use crate::cli::{Commands, ConfigAction};
 use crate::output::OutputFormatter;
+use argos_export::{ProcessRow, SampleRow, IntoSampleRow};
 use crate::error::{CliResult, CliError};
 use crate::config::Config;
 use std::fs;
@@ -81,8 +82,11 @@ impl CommandHandler {
             return Err(CliError::process_not_found(pid));
         }
 
+        // Convert Vec<Sample> to Vec<SampleRow>
+        let samples = samples.into_iter().map(|s| IntoSampleRow::into(s))
+            .collect::<Vec<SampleRow>>();
         let output = self.formatter.format_samples(&samples, format)?;
-        
+
         match output_file {
             Some(file_path) => {
                 fs::write(file_path, &output)
@@ -117,11 +121,9 @@ impl CommandHandler {
         format: &str,
         output_file: Option<&str>,
     ) -> CliResult<()> {
-
         let mut system = sysinfo::System::new_all();
         system.refresh_processes();
 
-        // Recolectar procesos
         let mut processes: Vec<_> = system.processes().values().collect();
 
         // Filtrar por nombre
@@ -148,60 +150,9 @@ impl CommandHandler {
             _ => {}
         }
 
-        // Construir ProcessRow para cada proceso
-        #[derive(serde::Serialize)]
-        struct ProcessRow {
-            pid: u32,
-            name: String,
-            cpu_usage: f32,
-            memory_mb: f64,
-            user: String,
-            groups: String,
-            state: String,
-            exe: String,
-            cmd: String,
-            start_time: u64,
-            parent_pid: Option<u32>,
-            virtual_memory_mb: f64,
-            read_disk_usage: f64,
-            write_disk_usage: f64,
-        }
+        // Conversión a ProcessRow de argos_export
+        let rows: Vec<ProcessRow> = processes.iter().map(|p| process_to_row(p)).collect();
 
-        
-        let rows: Vec<ProcessRow> = processes.iter().map(|p| {
-
-            let myuser = p.user_id().and_then(|uid| get_user_by_id(uid.clone()));
-            let user_name = myuser.as_ref().map(|u| u.name.as_str()).unwrap_or("-").to_string();
-            let groups = myuser.as_ref().map(|u| u.groups.join(",")).unwrap_or_else(|| "-".to_string());
-            let state = format!("{:?}", p.status());
-            let exe = p.exe().map(|path| path.display().to_string()).unwrap_or_else(|| "-".to_string());
-            let cmd = p.cmd().join(" ");
-            let start_time = p.start_time();
-            let parent_pid = p.parent().map(|pp| pp.as_u32());
-            let virtual_memory_mb = p.virtual_memory() as f64 / 1024.0;
-            let read_disk_usage = p.disk_usage().total_read_bytes as f64 / 1024.0;
-            let write_disk_usage = p.disk_usage().total_written_bytes as f64 / 1024.0;
-
-            ProcessRow {
-                pid: p.pid().as_u32(),
-                name: p.name().to_string(),
-                cpu_usage: p.cpu_usage(),
-                memory_mb: p.memory() as f64 / 1024.0,
-                read_disk_usage,
-                write_disk_usage,
-                user: user_name,
-                groups,
-                state,
-                exe,
-                cmd,
-                start_time,
-                parent_pid,
-                virtual_memory_mb,
-                
-            }
-        }).collect();
-
-        // Delegar el formateo a OutputFormatter
         let output = self.formatter.format_process_list(&rows, format)?;
         if let Some(file_path) = output_file {
             fs::write(file_path, &output)
@@ -214,23 +165,57 @@ impl CommandHandler {
         }
         Ok(())
     }
-
     fn handle_config(&mut self, action: ConfigAction) -> CliResult<()> {
-        match action {
-            ConfigAction::Show => {
-                println!("{}", self.config.display());
-            }
-            ConfigAction::Set { key, value } => {
-                self.config.set_value(&key, &value)?;
-                self.config.save()?;
-                println!("⚙️  Configuración actualizada: {} = {}", key, value);
-            }
-            ConfigAction::Reset => {
-                self.config = Config::default();
-                self.config.save()?;
-                println!("⚙️  Configuración reseteada a valores por defecto");
-            }
+    match action {
+        ConfigAction::Show => {
+            println!("{}", self.config.display());
         }
-        Ok(())
+        ConfigAction::Set { key, value } => {
+            self.config.set_value(&key, &value)?;
+            self.config.save()?;
+            println!("⚙️  Configuración actualizada: {} = {}", key, value);
+        }
+        ConfigAction::Reset => {
+            self.config = Config::default();
+            self.config.save()?;
+            println!("⚙️  Configuración reseteada a valores por defecto");
+        }
+    }
+    Ok(())
+}
+}
+
+// Conversión de sysinfo::Process a argos_export::ProcessRow
+fn process_to_row(p: &sysinfo::Process) -> ProcessRow {
+    use argos_core::users::utils::get_user_by_id;
+    let myuser = p.user_id().and_then(|uid| get_user_by_id(uid.clone()));
+    let user_name = myuser.as_ref().map(|u| u.name.as_str()).unwrap_or("-").to_string();
+    let groups = myuser.as_ref().map(|u| u.groups.join(",")).unwrap_or_else(|| "-".to_string());
+    let state = format!("{:?}", p.status());
+    let exe = p.exe().map(|path| path.display().to_string()).unwrap_or_else(|| "-".to_string());
+    let cmd = p.cmd().join(" ");
+    let start_time = p.start_time();
+    let parent_pid = p.parent().map(|pp| pp.as_u32());
+    let virtual_memory_mb = p.virtual_memory() as f64 / 1024.0;
+    let read_disk_usage = p.disk_usage().total_read_bytes as f64 / 1024.0;
+    let write_disk_usage = p.disk_usage().total_written_bytes as f64 / 1024.0;
+
+    ProcessRow {
+        pid: p.pid().as_u32(),
+        name: p.name().to_string(),
+        cpu_usage: p.cpu_usage() as f64,
+        memory_mb: p.memory() as f64 / 1024.0,
+        user: user_name,
+        groups,
+        state,
+        exe,
+        cmd,
+        start_time,
+        parent_pid,
+        virtual_memory_mb,
+        read_disk_usage,
+        write_disk_usage,
     }
 }
+
+

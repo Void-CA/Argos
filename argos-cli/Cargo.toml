@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
 argos-core = { path = "../argos-core" }
+argos-export = { path = "../argos-export" }
 dotenvy = "0.15"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
