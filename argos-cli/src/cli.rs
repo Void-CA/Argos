@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "argos")]
@@ -101,13 +103,21 @@ pub enum Commands {
 
     /// Comparacion entre dos procesos
     Compare {
-        /// ID del primer proceso (PID)
-        #[arg(short, long)]
-        pid1: u32,
+        /// IDs de los procesos (PIDs)
+        #[arg(long, num_args = 1.., conflicts_with("files"))]
+        pids: Option<Vec<u32>>,
 
-        /// ID del segundo proceso (PID)
+        /// Direccion de los files a comparar
+        #[arg(long, num_args = 1.., conflicts_with("pids"))]
+        files: Option<Vec<PathBuf>>,
+
+        /// Formato de salida (text, json, csv)
+        #[arg(short, long, default_value = "text")]
+        format: String,
+
+        /// Archivo de salida (opcional)
         #[arg(short, long)]
-        pid2: u32,
+        output: Option<String>,
     },
 
     /// Genera logs y reportes de auditoría

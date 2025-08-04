@@ -9,6 +9,7 @@ use crate::error::{CliResult, CliError};
 use crate::config::Config;
 use std::fs;
 use std::io::{self, Write};
+use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 use ctrlc;
@@ -47,8 +48,8 @@ impl CommandHandler {
             Commands::Live {pid} => {
                 self.handle_live(pid)
             }
-            Commands::Compare {pid1, pid2} => {
-                self.handle_compare(pid1, pid2)
+            Commands::Compare {pids, files, format, output} => {
+                self.handle_compare(pids, files, &format, output.as_deref())
             }
             Commands::Watchdog { pid, cpu_over, memory_over, on_exceed, interval } => {
                 self.handle_watchdog(pid, cpu_over, memory_over, on_exceed, interval)
@@ -235,15 +236,21 @@ fn handle_live(&self, pid: u32) -> CliResult<()> {
     Ok(())
 }
 
-fn handle_compare(&self, pid1: u32, pid2: u32) -> CliResult<()> {
-    // Implementar la lógica para comparar procesos usando pid1 y pid2
-    println!("Comparando procesos: {} y {}", pid1, pid2);
+fn handle_compare(&self, pids: Option<Vec<u32>>, files: Option<Vec<PathBuf>>, format: &str, output: Option<&str>) -> CliResult<()> {
+    if pids.is_none() && files.is_none() {
+        return Err(CliError::new(
+            crate::error::ErrorKind::ValidationError,
+            "Debe proporcionar al menos un PID o un archivo para comparar",
+        ));
+    }
+
     Ok(())
 }
 fn handle_watchdog(&self, pid: u32, cpu_over: u8, memory_over: u8, on_exceed: Option<String>, interval: u64) -> CliResult<()> {
     // Implementar la lógica para el watchdog
     Ok(())
 }
+
 fn handle_tag(&self, name: &str, pid: u32) -> CliResult<()> {
     // Implementar la lógica para etiquetar procesos
     // Por ahora, solo imprimimos un mensaje

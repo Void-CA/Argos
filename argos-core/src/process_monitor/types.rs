@@ -50,3 +50,10 @@ pub struct Process {
     pub parent_pid: Option<u32>,
     pub created_at: u64,
 }
+
+#[derive(Debug)]
+pub enum CoreError {
+    ProcessEnded,
+    Other(String)
+    // Add other error variants as needed
+}
