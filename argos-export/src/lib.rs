@@ -1,12 +1,14 @@
 // En argos-export/lib.rs
-
 pub mod error;
 pub mod process;
 pub mod samples;
+pub mod utils;
+
 
 pub use error::ExportError;
-pub use process::{ProcessRow, format_process_list, format_process_info};
+pub use process::{format_process_list, format_process_info};
 pub use samples::{SampleRow, format_samples_list, IntoSampleRow};
+
 use serde::Serialize;
 
 pub fn format_to_json<T: ?Sized + Serialize>(value: &T) -> Result<String, ExportError> {

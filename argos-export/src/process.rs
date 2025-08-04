@@ -1,24 +1,6 @@
-use serde::Serialize;
 use crate::error::ExportError;
+use argos_core::utils::process::{ProcessRow};
 
-#[derive(Debug, Serialize)]
-pub struct ProcessRow {
-    pub pid: u32,
-    pub name: String,
-    pub cpu_usage: f64,
-    pub memory_mb: f64,
-    pub user: String,
-    pub groups: String,
-    pub state: String,
-    pub start_time: u64,
-    pub parent_pid: Option<u32>,
-    pub virtual_memory_mb: f64,
-    pub read_disk_usage: f64,
-    pub write_disk_usage: f64,
-    pub exe: String,
-    pub cmd: String,
-    // ...otros campos si es necesario
-}
 
 pub fn format_process_list(rows: &[ProcessRow], format: &str) -> Result<String, ExportError> {
     match format {

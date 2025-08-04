@@ -1,5 +1,6 @@
 use argos_core::process_monitor::types::ProcessInfo;
-use argos_export::{self, ProcessRow, SampleRow};
+use argos_core::utils::process::{ProcessRow};
+use argos_export::{self, SampleRow};
 use crate::error::{CliResult, CliError};
 
 #[derive(Debug)]
