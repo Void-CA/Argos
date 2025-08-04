@@ -1,4 +1,4 @@
-use argos_core::process_monitor::{monitor_process, monitor_during_execution};
+use argos_core::process_monitor::{monitor_process, monitor_during_execution, monitor_live};
 use argos_core::users::utils::get_user_by_id;
 use argos_core::db::process::insert_process;
 use argos_core::db::manager::establish_connection;
@@ -201,40 +201,17 @@ impl CommandHandler {
 }
 
 fn handle_live(&self, pid: u32) -> CliResult<()> {
-    use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
-
-    // Bandera para controlar la interrupción del loop
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
-
-    // Ctrl+C para salir del monitoreo
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    }).expect("No se pudo establecer el handler de Ctrl+C");
-
-    while running.load(Ordering::SeqCst) {
-        sysinfo::System::new_all().refresh_processes();
-        // Refresca la información del proceso
-        let info = match monitor_process(pid) {
-            Some(i) => i,
-            None => {
-                eprintln!("Proceso con PID {} no encontrado o finalizado.", pid);
-                break;
-            }
-        };
-
-        // Limpia la terminal para una vista en vivo
-        print!("\x1B[2J\x1B[1;1H"); // ANSI escape codes para limpiar
-        io::stdout().flush().unwrap();
-
-        let output = self.formatter.format_process_info(&info, "csv")?;
+    
+    monitor_live(pid, 200, |sample| {
+        let row = IntoSampleRow::into(sample);
+        let output = self.formatter.format_samples(std::slice::from_ref(&row), "csv").unwrap();
+        print!("\x1B[2J\x1B[1;1H"); // clear screen
         println!("{}", output);
-
-        thread::sleep(Duration::from_millis(200));
-    }
+    }).map_err(|e| CliError::io_error(format!("Error al iniciar monitorización en vivo")))?;
 
     Ok(())
 }
+
 
 fn handle_compare(&self, pids: Option<Vec<u32>>, files: Option<Vec<PathBuf>>, format: &str, output: Option<&str>) -> CliResult<()> {
     if pids.is_none() && files.is_none() {
@@ -243,7 +220,7 @@ fn handle_compare(&self, pids: Option<Vec<u32>>, files: Option<Vec<PathBuf>>, fo
             "Debe proporcionar al menos un PID o un archivo para comparar",
         ));
     }
-
+    
     Ok(())
 }
 fn handle_watchdog(&self, pid: u32, cpu_over: u8, memory_over: u8, on_exceed: Option<String>, interval: u64) -> CliResult<()> {
