@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 #[command(name = "argos")]
 #[command(version = "0.1.0")]
 #[command(about = "Herramienta de auditoría y análisis de recursos en tiempo real", long_about = None)]
+
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -86,6 +87,10 @@ pub enum Commands {
         /// Archivo de salida (opcional)
         #[arg(short, long)]
         output: Option<String>,
+
+        /// Mostrar solo los primeros N resultados
+        #[arg(long)]
+        top: Option<usize>,
     },
     
     /// Configuración del sistema

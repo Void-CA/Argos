@@ -44,8 +44,8 @@ impl CommandHandler {
             Commands::History { pid, limit, format } => {
                 handle_history(&self.formatter, pid, limit, &format)
             }
-            Commands::List { name, user, sort_by, format , output} => {
-                handle_list(&self.formatter, name.as_deref(), user.as_deref(), &sort_by, &format, output.as_deref())
+            Commands::List { name, user, sort_by, format , output, top} => {
+                handle_list(&self.formatter, name.as_deref(), user.as_deref(), &sort_by, &format, output.as_deref(), top)
             }
             Commands::Live {pid} => {
                 handle_live(&self.formatter, pid)
