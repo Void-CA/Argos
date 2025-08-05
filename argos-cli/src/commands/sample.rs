@@ -1,10 +1,17 @@
-use crate::error::{CliResult, CliError};
-use crate::output::OutputFormatter;
-use argos_export::{SampleRow, IntoSampleRow};
-use argos_core::process_monitor::monitor_during_execution;
 use std::fs;
+use argos_core::process_monitor::monitor_during_execution;
+use argos_export::{IntoSampleRow, SampleRow};
+use crate::output::OutputFormatter;
+use crate::error::{CliError, CliResult};
 
-pub fn handle_sample(formatter: &OutputFormatter, pid: u32, iterations: usize, interval_ms: u64, format: &str, output_file: Option<&str>) -> CliResult<()> {
+pub fn handle_sample(
+    formatter: &OutputFormatter,
+    pid: u32,
+    iterations: usize,
+    interval_ms: u64,
+    format: &str,
+    output_file: Option<&str>,
+) -> CliResult<()> {
     if format == "text" {
         println!(
             "🔍 Muestreo del PID {} por {} iteraciones ({} ms c/u):\n",
@@ -16,7 +23,7 @@ pub fn handle_sample(formatter: &OutputFormatter, pid: u32, iterations: usize, i
     if samples.is_empty() {
         return Err(CliError::process_not_found(pid));
     }
-    let samples: Vec<SampleRow> = samples.into_iter().map(|s| s.into()).collect();
+    let samples: Vec<SampleRow> = samples.into_iter().map(|s| IntoSampleRow::into(s)).collect();
     let output = formatter.format_samples(&samples, format)?;
     match output_file {
         Some(file_path) => {

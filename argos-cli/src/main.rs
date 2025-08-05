@@ -2,13 +2,14 @@ mod cli;
 mod error;
 mod output;
 mod config;
+mod command_handler;
 mod commands;
 
 use clap::Parser;
 use dotenvy;
 use std::process;
 use cli::Cli;
-use crate::commands::CommandHandler;
+use crate::command_handler::CommandHandler;
 
 fn main() {
     // Cargar variables de entorno desde .env si existe
