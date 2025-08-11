@@ -1,16 +1,7 @@
-use argos_core::process_monitor::Sample;
-use serde::Serialize;
-
-#[derive(Serialize)]
-pub struct SampleRow {
-    pub timestamp: String,
-    pub cpu_usage: f32,
-    pub memory: u64,
-    // ...otros campos...
-}
+use argos_core::process::model::ProcessRow;
 
 pub fn format_samples_list(
-    samples: &[SampleRow],
+    samples: &[ProcessRow],
     format: &str
 ) -> Result<String, crate::ExportError> {
     match format {
@@ -18,23 +9,9 @@ pub fn format_samples_list(
         "csv" => crate::format_to_csv(samples),
         "text" => Ok(crate::format_to_text(
             samples,
-            |s| vec![s.timestamp.clone(), s.cpu_usage.to_string(), s.memory.to_string()],
+            |s| vec![s.start_time_human.clone(), s.cpu_usage.to_string(), s.memory_mb.to_string()],
             &["Timestamp", "CPU Usage", "Memory"]
         )),
         _ => Err(crate::ExportError::UnsupportedFormat(format.to_string())),
-    }
-}
-
-pub trait IntoSampleRow {
-    fn into(self) -> SampleRow;
-}
-
-impl IntoSampleRow for Sample {
-    fn into(self) -> SampleRow {
-        SampleRow {
-            timestamp: self.timestamp.to_string(),
-            cpu_usage: self.cpu_usage,
-            memory: self.memory,
-        }
     }
 }

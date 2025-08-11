@@ -5,8 +5,9 @@ pub mod process;
 pub mod samples;
 
 pub use error::ExportError;
-pub use process::{ProcessRow, format_process_list, format_process_info};
-pub use samples::{SampleRow, format_samples_list, IntoSampleRow};
+pub use process::{format_process_list, format_process_info};
+pub use samples::format_samples_list;
+
 use serde::Serialize;
 
 pub fn format_to_json<T: ?Sized + Serialize>(value: &T) -> Result<String, ExportError> {

@@ -1,6 +1,7 @@
 
-pub mod process_monitor;
+pub mod process;
+pub mod commands;
 pub mod users;
 pub mod db;
-pub mod mapping;
+pub mod errors;
 mod models;

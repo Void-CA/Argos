@@ -1,24 +1,7 @@
 use serde::Serialize;
 use crate::error::ExportError;
+use argos_core::process::model::ProcessRow;
 
-#[derive(Debug, Serialize)]
-pub struct ProcessRow {
-    pub pid: u32,
-    pub name: String,
-    pub cpu_usage: f64,
-    pub memory_mb: f64,
-    pub user: String,
-    pub groups: String,
-    pub state: String,
-    pub start_time: u64,
-    pub parent_pid: Option<u32>,
-    pub virtual_memory_mb: f64,
-    pub read_disk_usage: f64,
-    pub write_disk_usage: f64,
-    pub exe: String,
-    pub cmd: String,
-    // ...otros campos si es necesario
-}
 
 pub fn format_process_list(rows: &[ProcessRow], format: &str) -> Result<String, ExportError> {
     match format {
@@ -45,9 +28,7 @@ pub fn format_process_list(rows: &[ProcessRow], format: &str) -> Result<String, 
     }
 }
 
-// Opcional: función para formatear un solo proceso (puede usarse para detalles)
-use argos_core::process_monitor::types::ProcessInfo;
-pub fn format_process_info(info: &ProcessInfo, format: &str) -> Result<String, ExportError> {
+pub fn format_process_info(info: &ProcessRow, format: &str) -> Result<String, ExportError> {
     match format {
         "json" => crate::format_to_json(info),
         "csv" => crate::format_to_csv(&[info]),
