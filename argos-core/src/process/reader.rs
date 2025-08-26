@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::process::{model::ProcessRow, transform::process_to_row};
 
 pub struct ProcessReader {
@@ -12,11 +14,12 @@ impl ProcessReader {
     }
 
     pub fn refresh(&mut self) {
-        std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+        std::thread::sleep(Duration::from_millis(500));
         self.system.refresh_all();
     }
 
-    pub fn get_all(&self) -> Vec<ProcessRow> {
+    pub fn get_all(&mut self) -> Vec<ProcessRow> {
+        self.refresh(); 
         self.system
             .processes()
             .values()
@@ -24,7 +27,8 @@ impl ProcessReader {
             .collect()
     }
 
-    pub fn get_by_pids(&self, pids: &[u32]) -> Vec<ProcessRow> {
+    pub fn get_by_pids(&mut self, pids: &[u32]) -> Vec<ProcessRow> {
+        self.refresh();
         self.system
             .processes()
             .values()

@@ -10,7 +10,7 @@ pub fn monitor_live_by_pid<F>(pid: u32, mut callback: F) -> CoreResult<()>
 where
     F: FnMut(&ProcessRow),
 {
-    let reader = ProcessReader::new();
+    let mut reader = ProcessReader::new();
     loop {
         let rows = reader.get_by_pids(&[pid]);
         if let Some(row) = rows.into_iter().next() {

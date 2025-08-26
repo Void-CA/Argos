@@ -35,7 +35,7 @@ pub enum Commands {
 
         /// Número de iteraciones
         #[arg(long, default_value_t = 10)]
-        iterations: usize,
+        iterations: u32,
 
         /// Intervalo entre muestras (milisegundos)
         #[arg(short = 'i', long, default_value_t = 200)]
@@ -86,6 +86,11 @@ pub enum Commands {
         /// Archivo de salida (opcional)
         #[arg(short, long)]
         output: Option<String>,
+
+        /// Limitar número de resultados
+        #[arg(short, long)]
+        top: Option<usize>,
+
     },
     
     /// Configuración del sistema
@@ -127,12 +132,12 @@ pub enum Commands {
         pid: u32,
 
         /// Umbral de CPU para activar la alerta
-        #[arg(long, default_value_t = 80)]
-        cpu_over: u8,
+        #[arg(long)]
+        cpu_over: Option<f32>,
 
         /// Umbral de memoria para activar la alerta
-        #[arg(long, default_value_t = 80)]
-        memory_over: u8,
+        #[arg(long)]
+        memory_over: Option<u64>,
 
         /// Acción a realizar cuando se exceden los umbrales
         #[arg(long)]

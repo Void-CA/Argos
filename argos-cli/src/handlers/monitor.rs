@@ -1,11 +1,16 @@
-use argos_core::commands::monitor::monitor_by_pid;
-pub fn handle_monitor(pid: i32, format: &str, save: bool) -> CliResult<()> {
+use std::fs;
+
+use argos_core::commands::monitor::monitor_by_pids;
+
+use crate::{error::{CliError, CliResult}, output::OutputFormatter};
+
+pub fn handle_monitor(pid: u32, format: &str, save: bool) -> CliResult<()> {
     // Llamar al core
-    let process = monitor_by_pid(pid).map_err(CliError::core_error)?;
+    let process = monitor_by_pids(&[pid]).map_err(CliError::core_error)?;
 
     // Formatear salida
     let formatter = OutputFormatter::new();
-    let output = formatter.format_process(&process, format)?;
+    let output = formatter.format_process_info(&process[0], format)?;
 
     // Guardar en archivo o imprimir en stdout
     if save {

@@ -1,1 +1,0 @@
-cargo run monitor --pid $1

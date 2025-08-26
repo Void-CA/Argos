@@ -13,7 +13,7 @@ pub fn sample_process(pid: u32, iterations: usize, interval_ms: u64) -> CoreResu
     let mut results = Vec::with_capacity(iterations);
 
     for _ in 0..iterations {
-        let reader = ProcessReader::new();
+        let mut reader = ProcessReader::new();
         let rows = reader.get_by_pids(&[pid]);
 
         if rows.is_empty() {

@@ -3,6 +3,7 @@ mod error;
 mod output;
 mod config;
 mod command_handler;
+mod handlers;
 
 use clap::Parser;
 use dotenvy;

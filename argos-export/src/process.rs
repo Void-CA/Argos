@@ -16,12 +16,13 @@ pub fn format_process_list(rows: &[ProcessRow], format: &str) -> Result<String, 
                 p.user.clone(),
                 p.groups.clone(),
                 p.state.clone(),
-                p.start_time.to_string(),
+                p.start_time_human.clone(),
                 p.parent_pid.map_or("-".to_string(), |pp| pp.to_string()),
                 format!("{:.2}", p.virtual_memory_mb),
                 format!("{:.2}", p.read_disk_usage),
+                format!("{:.2}", p.write_disk_usage),
             ],
-            &["PID", "Nombre", "CPU %", "RAM MB", "Usuario", "Grupos", "Estado", "Inicio", "Padre", "VMEM", "Lectura"]
+            &["PID", "Nombre", "CPU %", "RAM MB", "Usuario", "Grupos", "Estado", "Inicio", "Padre", "VMEM", "Lectura", "Escritura"]
         )),
         _ => Err(ExportError::UnsupportedFormat(format.to_string())),
     }

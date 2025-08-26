@@ -4,13 +4,13 @@ use crate::errors::CoreError;
 use sysinfo::System;
 
 pub struct WatchdogReport {
-    pub pid: i32,
+    pub pid: u32,
     pub triggered: Vec<(Condition, Action)>, // historial de disparos
     pub duration: Duration,                  // cuánto tiempo estuvo corriendo
 }
 
 pub fn watchdog(
-    pid: i32,
+    pid: u32,
     interval: Duration,
     conditions: Vec<Condition>,
     actions: Vec<Action>,

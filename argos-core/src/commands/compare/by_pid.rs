@@ -9,7 +9,7 @@ pub fn compare_by_pid(pids: &[u32]) -> Result<Vec<ProcessRow>, CoreError> {
         return Err(CoreError::ComparisonError("No se proporcionaron PIDs".into()));
     }
 
-    let reader = ProcessReader::new();
+    let mut reader = ProcessReader::new();
     let rows = reader.get_by_pids(pids);
 
     if rows.is_empty() {

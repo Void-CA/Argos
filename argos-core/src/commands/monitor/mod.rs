@@ -10,7 +10,7 @@ pub fn monitor_by_pids(pids: &[u32]) -> CoreResult<Vec<ProcessRow>> {
         return Err(CoreError::ValidationError("No se proporcionaron PIDs".into()));
     }
 
-    let reader = ProcessReader::new();
+    let mut reader = ProcessReader::new();
     let rows = reader.get_by_pids(pids);
 
     if rows.is_empty() {

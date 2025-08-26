@@ -24,4 +24,9 @@ impl OutputFormatter {
         argos_export::format_samples_list(samples, format)
             .map_err(|e| CliError::format_error(format!("Error al exportar muestras: {}", e)))
     }
+    
+    pub(crate) fn format_comparison(&self, comparison: &[ProcessRow], format: &str) -> CliResult<String> {
+        argos_export::format_comparison(comparison, format)
+            .map_err(|e| CliError::format_error(format!("Error al exportar comparación: {}", e)))
+    }
 }

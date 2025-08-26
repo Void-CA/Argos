@@ -16,6 +16,7 @@ pub enum ErrorKind {
     ConfigError,
     IoError,
     ValidationError,
+    CoreError,
 }
 
 impl CliError {
@@ -45,7 +46,11 @@ impl CliError {
         Self::new(ErrorKind::IoError, msg)
     }
 
+    pub fn core_error<E: std::fmt::Display>(err: E) -> Self {
+        Self::new(ErrorKind::CoreError, err.to_string())
+    }
 }
+
 
 impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -56,6 +61,7 @@ impl fmt::Display for CliError {
             ErrorKind::ConfigError => write!(f, "⚙️  Error de configuración: {}", self.message),
             ErrorKind::IoError => write!(f, "📁 Error de E/S: {}", self.message),
             ErrorKind::ValidationError => write!(f, "⚠️  Error de validación: {}", self.message),
+            ErrorKind::CoreError => write!(f, "🛠️  Error interno: {}", self.message),
         }
     }
 }

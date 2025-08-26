@@ -220,11 +220,6 @@ El sistema se estructura alrededor de cinco pilares fundamentales:
   - Análisis de patrones de comunicación de red anómalos
   - Detección de procesos que ejecutan comandos sospechosos
 
-- **Machine Learning Integrado**:
-  - Algoritmos de clustering para identificar procesos similares
-  - Detección de outliers en patrones de uso
-  - Análisis de series temporales para predecir comportamientos futuros
-  - Aprendizaje continuo de patrones normales del sistema
 
 **Categorización de Alertas**:
 - **Críticas**: Amenazas inmediatas a la seguridad o estabilidad

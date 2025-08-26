@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 #[derive(Debug, Clone)]
 pub enum Condition {
     CpuAbove(f32),   // Ej: CPU > 80%
@@ -37,5 +39,18 @@ impl Action {
             }
         }
         Ok(())
+    }
+}
+
+impl FromStr for Action {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "kill" => Ok(Action::Kill),
+            "log" => Ok(Action::Log("Mensaje".into())), // necesitas un valor por defecto
+            "export" => Ok(Action::Export("output.txt".into())), // idem
+            _ => Err(format!("Unknown action: {}", s)),
+        }
     }
 }
