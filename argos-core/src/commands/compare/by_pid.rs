@@ -1,18 +1,20 @@
-use crate::process::{model::ProcessRow, transform::process_to_row};
+use crate::{
+    errors::CoreError,
+    process::reader::ProcessReader,
+    process::model::ProcessRow
+};
 
-// argos_core::compare::by_pid.rs
-pub fn compare_by_pid(pids: &[u32]) -> Result<Vec<ProcessRow>, crate::errors::CoreError> {
-    let mut system = sysinfo::System::new_all();
-    system.refresh_processes();
-    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
-    system.refresh_processes();
+pub fn compare_by_pid(pids: &[u32]) -> Result<Vec<ProcessRow>, CoreError> {
+    if pids.is_empty() {
+        return Err(CoreError::ComparisonError("No se proporcionaron PIDs".into()));
+    }
 
-    let processes: Vec<_> = system
-        .processes()
-        .values()
-        .filter(|p| pids.contains(&p.pid().as_u32()))
-        .collect();
+    let reader = ProcessReader::new();
+    let rows = reader.get_by_pids(pids);
 
-    let rows: Vec<ProcessRow> = processes.iter().map(|p| process_to_row(p)).collect();
+    if rows.is_empty() {
+        return Err(CoreError::ComparisonError("No se encontraron procesos con esos PIDs".into()));
+    }
+
     Ok(rows)
 }

@@ -4,4 +4,5 @@ pub mod commands;
 pub mod users;
 pub mod db;
 pub mod errors;
+pub mod validation;
 mod models;

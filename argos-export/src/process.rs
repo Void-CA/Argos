@@ -1,4 +1,3 @@
-use serde::Serialize;
 use crate::error::ExportError;
 use argos_core::process::model::ProcessRow;
 
