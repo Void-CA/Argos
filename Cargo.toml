@@ -1,6 +1,6 @@
 [workspace]
 members = [
     "argos-core",
-    "argos-cli", "argos-export",
+    "argos-cli", "argos-export", "argos-tui",
 ]
 resolver = "3"

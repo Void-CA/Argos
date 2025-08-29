@@ -55,13 +55,13 @@ impl CliError {
 impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.kind {
-            ErrorKind::ProcessNotFound => write!(f, "❌ Proceso no encontrado: {}", self.message),
-            ErrorKind::DatabaseError => write!(f, "💾 Error de base de datos: {}", self.message),
-            ErrorKind::FormatError => write!(f, "📄 Error de formato: {}", self.message),
-            ErrorKind::ConfigError => write!(f, "⚙️  Error de configuración: {}", self.message),
-            ErrorKind::IoError => write!(f, "📁 Error de E/S: {}", self.message),
-            ErrorKind::ValidationError => write!(f, "⚠️  Error de validación: {}", self.message),
-            ErrorKind::CoreError => write!(f, "🛠️  Error interno: {}", self.message),
+            ErrorKind::ProcessNotFound => write!(f, "Proceso no encontrado: {}", self.message),
+            ErrorKind::DatabaseError => write!(f, "Error de base de datos: {}", self.message),
+            ErrorKind::FormatError => write!(f, "Error de formato: {}", self.message),
+            ErrorKind::ConfigError => write!(f, "Error de configuración: {}", self.message),
+            ErrorKind::IoError => write!(f, "Error de E/S: {}", self.message),
+            ErrorKind::ValidationError => write!(f, "Error de validación: {}", self.message),
+            ErrorKind::CoreError => write!(f, "Error interno: {}", self.message),
         }
     }
 }

@@ -3,10 +3,9 @@
 pub mod error;
 pub mod process;
 pub mod samples;
-
 use argos_core::process::model::ProcessRow;
 pub use error::ExportError;
-pub use process::{format_process_list, format_process_info};
+pub use process::{format_process_list, format_process_info, format_process_tree, format_comparison};
 pub use samples::format_samples_list;
 
 use serde::Serialize;
@@ -75,23 +74,4 @@ where
     }
 
     output
-}
-
-
-pub fn format_comparison(comparison: &[argos_core::process::model::ProcessRow], format: &str) -> Result<std::string::String, ExportError> {
-    match format {
-        "json" => format_to_json(comparison),
-        "csv" => format_to_csv(comparison),
-        "text" => Ok(format_to_text(
-            comparison,
-            |row| vec![
-                row.pid.to_string(),
-                row.name.clone(),
-                format!("{:.2}%", row.cpu_usage),
-                format!("{:.2} KB", row.memory_mb),
-            ],
-            &["PID", "Name", "CPU Usage", "Memory", "Command"]
-        )),
-        _ => Err(ExportError::UnsupportedFormat(format.to_string())),
-    }
 }

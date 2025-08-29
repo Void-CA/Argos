@@ -14,6 +14,11 @@ pub fn handle_list(
     // Llamar al core
     let mut rows = list_processes().map_err(|e| CliError::io_error(e.to_string()))?;
 
+    // === Limitar con top ===
+    if let Some(limit) = top {
+        rows.truncate(limit);
+    }
+    
     // === Aplicar filtros ===
     if let Some(n) = name {
         rows.retain(|p| p.name.contains(&n));
@@ -31,10 +36,7 @@ pub fn handle_list(
         _ => {} // si no matchea nada, no se ordena
     }
 
-    // === Limitar con top ===
-    if let Some(limit) = top {
-        rows.truncate(limit);
-    }
+    
 
     // === Formatear salida ===
     let formatter = OutputFormatter::new();

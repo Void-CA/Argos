@@ -25,6 +25,7 @@ pub enum Commands {
         /// Guardar en base de datos
         #[arg(long)]
         save: bool,
+
     },
     
     /// Realiza un muestreo durante varios segundos
@@ -104,16 +105,25 @@ pub enum Commands {
         /// ID del proceso (PID)
         #[arg(short, long)]
         pid: u32,
+
+        /// Archivo de salida (opcional)
+        #[arg(short, long)]
+        output: Option<String>,
+
+        /// Formato de salida (text, json, csv)
+        #[arg(short, long, default_value = "text")]
+        format: Option<String>,
+        
     },
 
     /// Comparacion entre dos procesos
     Compare {
         /// IDs de los procesos (PIDs)
-        #[arg(long, num_args = 1.., conflicts_with("files"))]
+        #[arg(long, num_args = 1.., value_delimiter= ' ', conflicts_with("files"))]
         pids: Option<Vec<u32>>,
 
         /// Direccion de los files a comparar
-        #[arg(long, num_args = 1.., conflicts_with("pids"))]
+        #[arg(long, num_args = 1.., value_delimiter= ' ', conflicts_with("pids"))]
         files: Option<Vec<PathBuf>>,
 
         /// Formato de salida (text, json, csv)
@@ -123,6 +133,10 @@ pub enum Commands {
         /// Archivo de salida (opcional)
         #[arg(short, long)]
         output: Option<String>,
+
+        /// Intervalo en milisegundos
+        #[arg(short, long, default_value = "300")]
+        interval: u64
     },
 
     /// Genera logs y reportes de auditoría
@@ -157,7 +171,23 @@ pub enum Commands {
         /// ID del proceso (PID)
         #[arg(short, long)]
         pid: u32,
+    },
+
+    /// Exploracion de procesos por familia
+    Family {
+        /// ID del proceso (PID)
+        #[arg(short, long)]
+        pid: u32,
+
+        /// Formato de salida (text, json, csv)
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
+
+    Tui {
+        
     }
+
 }
 
 #[derive(Subcommand)]

@@ -1,4 +1,5 @@
 use crate::cli::{Commands};
+use crate::handlers::tui::handle_tui;
 use crate::output::OutputFormatter;
 use crate::error::{CliResult};
 use crate::config::Config;
@@ -8,7 +9,8 @@ use crate::handlers::{list::handle_list,
                      live::handle_live,
                      compare::handle_compare,
                      watchdog::handle_watchdog,
-                     config::handle_config};
+                     config::handle_config,
+                     family::handle_family};
 
                      
 #[derive(Debug)]
@@ -41,13 +43,11 @@ impl CommandHandler {
                 print!("History command selected with pid: {:?}, limit: {}, format: {}\n", pid, limit, format);
                 Ok(())
             }
-            Commands::Live {pid} => {
-                handle_live(pid)
+            Commands::Live {pid, output, format} => {
+                handle_live(pid, output.as_deref(), format.as_deref())
             }
-            Commands::Compare {pids, files, format, output} => {
-                let pid_opt = pids.and_then(|vec| vec.into_iter().next());
-                let file_opt = files.and_then(|vec| vec.into_iter().next()).and_then(|pb| pb.to_str().map(|s| s.to_string()));
-                handle_compare(pid_opt, file_opt.as_deref(), &format, output.as_deref())
+            Commands::Compare {pids, files, format, output, interval} => {
+                handle_compare(pids, files, &format, output.as_deref(), interval)
             }
             Commands::Watchdog { pid, cpu_over, memory_over, on_exceed, interval } => {
                 handle_watchdog(pid, cpu_over, memory_over, on_exceed, interval)
@@ -55,6 +55,12 @@ impl CommandHandler {
             Commands::Tag { name, pid } => {
                 print!("Tag command selected with name: {}, pid: {}\n", name, pid);
                 Ok(())
+            }
+            Commands::Family { pid, format } => {
+                handle_family(pid, &format)
+            }
+            Commands::Tui {} => {
+                handle_tui()
             }
             Commands::Config { action } => {
                 handle_config(&mut self.config, action)

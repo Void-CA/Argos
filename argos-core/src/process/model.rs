@@ -17,6 +17,16 @@ pub struct ProcessRow {
     pub write_disk_usage: f64,
     pub exe: String,
     pub cmd: String,
-    // ...otros campos si es necesario
 }
 
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct ProcessDelta {
+    pub pid: u32,
+    pub name: String,
+    pub cpu_before: f64,
+    pub cpu_after: f64,
+    pub cpu_delta: f64,
+    pub mem_before: f64,
+    pub mem_after: f64,
+    pub mem_delta: f64,
+}

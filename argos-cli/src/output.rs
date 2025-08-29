@@ -1,4 +1,4 @@
-use argos_core::process::model::ProcessRow;
+use argos_core::process::model::{ProcessDelta, ProcessRow};
 use argos_export::{self};
 use crate::error::{CliResult, CliError};
 
@@ -25,8 +25,13 @@ impl OutputFormatter {
             .map_err(|e| CliError::format_error(format!("Error al exportar muestras: {}", e)))
     }
     
-    pub(crate) fn format_comparison(&self, comparison: &[ProcessRow], format: &str) -> CliResult<String> {
+    pub fn format_comparison(&self, comparison: &[ProcessDelta], format: &str) -> CliResult<String> {
         argos_export::format_comparison(comparison, format)
             .map_err(|e| CliError::format_error(format!("Error al exportar comparación: {}", e)))
+    }
+
+    pub fn format_process_tree(&self, root: u32, rows: &[ProcessRow], format: &str) -> CliResult<String> {
+        argos_export::format_process_tree(root, rows, format)
+            .map_err(|e| CliError::format_error(format!("Error al exportar árbol de procesos: {}", e)))
     }
 }

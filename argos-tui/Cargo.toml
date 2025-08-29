@@ -1,0 +1,9 @@
+[package]
+name = "argos-tui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ratatui = { version = "0.26.3", default-features = false, features = ["crossterm"] }
+crossterm = "0.28.1"  # Usa la misma versión que ratatui
+argos-core = { path = "../argos-core" }

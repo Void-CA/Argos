@@ -1,25 +1,40 @@
-use std::fs;
+use std::{fs, time::Duration, path::PathBuf};
+use std::thread::sleep;
 
-use argos_core::commands::compare::{by_file::compare_by_file, by_pid::compare_by_pid};
-
+use argos_core::commands::compare::{
+    by_file::compare_by_file,
+    by_pid::{sample_process, compare_samples},
+};
 use crate::{error::{CliError, CliResult}, output::OutputFormatter};
 
-pub fn handle_compare(pid: Option<u32>, file: Option<&str>, format: &str, output: Option<&str>) -> CliResult<()> {
+pub fn handle_compare(
+    pids: Option<Vec<u32>>,
+    files: Option<Vec<PathBuf>>,
+    format: &str,
+    output: Option<&str>,
+    interval_ms: u64,
+) -> CliResult<()> {
     // Validar entrada
-    if pid.is_none() && file.is_none() {
-        return Err(CliError::io_error("Debe proporcionar un PID o una ruta de archivo para comparar."));
+    if pids.is_none() && files.is_none() {
+        return Err(CliError::io_error(
+            "Debe proporcionar un PID o una ruta de archivo para comparar.",
+        ));
     }
-    if pid.is_some() && file.is_some() {
-        return Err(CliError::io_error("No puede proporcionar tanto un PID como una ruta de archivo. Elija uno."));
+    if pids.is_some() && files.is_some() {
+        return Err(CliError::io_error(
+            "No puede proporcionar tanto un PID como una ruta de archivo. Elija uno.",
+        ));
     }
 
-    // Llamar al core
-    let comparison = if let Some(pid) = pid {
-        compare_by_pid(&[pid]).map_err(CliError::core_error)?
-    } else if let Some(path) = file {
-        use std::path::PathBuf;
-        let path_buf = PathBuf::from(path);
-        compare_by_file(&[path_buf]).map_err(CliError::core_error)?
+    // Obtener los datos
+    let comparison = if let Some(pids) = pids {
+        // Sampleo en vivo: dos muestras consecutivas para todos los PIDs
+        let old_sample = sample_process(&pids).map_err(CliError::core_error)?;
+        sleep(Duration::from_millis(interval_ms));
+        let new_sample = sample_process(&pids).map_err(CliError::core_error)?;
+        compare_samples(&old_sample, &new_sample)
+    } else if let Some(files) = files {
+        compare_by_file(&files).map_err(CliError::core_error)?
     } else {
         unreachable!(); // Ya validamos que uno de los dos es Some
     };
