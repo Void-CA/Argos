@@ -184,6 +184,7 @@ pub enum Commands {
         format: String,
     },
 
+    /// Punto de entrada de la TUI
     Tui {
         
     }
