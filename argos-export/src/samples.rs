@@ -73,7 +73,7 @@ pub fn format_samples_list(samples: &[ProcessRow], format: &str) -> Result<Strin
                 let mem_min = mem_values.iter().cloned().fold(f64::INFINITY, f64::min);
                 let mem_max = mem_values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
 
-                writeln!(&mut output, "\n📊 Estadísticas:").unwrap();
+                writeln!(&mut output, "\nEstadísticas:").unwrap();
                 writeln!(&mut output, "CPU % -> Promedio: {:.2}, Min: {:.2}, Max: {:.2}, Desv.Est: {:.2}", cpu_avg, cpu_min, cpu_max, cpu_std).unwrap();
                 writeln!(&mut output, "RAM MB -> Promedio: {:.2}, Min: {:.2}, Max: {:.2}, Desv.Est: {:.2}", mem_avg, mem_min, mem_max, mem_std).unwrap();
             }

@@ -1,0 +1,29 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fontawesome5}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{helvet}
+\usepackage{fancybox}
+\usepackage{hyperref}
+
+% Definición de colores minimalistas - Morados más oscuros
+\definecolor{purpleprimary}{RGB}{30, 10, 40}      % Morado principal casi negro
+\definecolor{purpledark}{RGB}{40, 15, 70}         % Morado oscuro para títulos
+\definecolor{purplelight}{RGB}{80, 60, 100}       % Morado claro, pero más oscuro que antes
+\definecolor{purpleextralight}{RGB}{160, 130, 180}   % Morado extra ligero
+\definecolor{textcolor}{RGB}{33, 33, 33}          % Texto negro suave
+\definecolor{graylight}{RGB}{150, 150, 150}       % Gris para detalles
+
+% Marco minimalista para el abstract (CORREGIDO: usar newenvironment en lugar de renewenvironment)
+\newenvironment{abstractbox}{%
+  \begin{Sbox}\minipage{\dimexpr\textwidth-2\fboxsep\relax}
+}{%
+  \endminipage\end{Sbox}%
+  \fboxrule=1.5pt%
+  \fboxsep=1.2em%
+  \fcolorbox{purpleprimary}{purpleextralight}{\TheSbox}%
+}
+
+% Estilo de página vacía
+\pagestyle{empty}

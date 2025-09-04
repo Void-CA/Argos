@@ -1,0 +1,325 @@
+---
+version: "1.0"
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: true
+    self-contained: true
+    css: styles.css
+    fig-responsive: true
+    embed-resources: true
+    include-before-body: header.html
+  pdf:
+    documentclass: scrartcl
+    classoption:
+      - DIV=11
+      - numbers=noendperiod
+    papersize: letter
+    mainfont: Times New Roman
+    include-in-header: preamble.tex
+    include-before-body: header.tex
+---
+
+
+{{< pagebreak >}}
+
+## Síntesis inicial
+
+Argos es una herrramienta multiplataforma de monitoreo y auditoría diseñada para proporcionar visibilidad en tiempo real y análisis histórico del uso de recursos computacionales en sistemas operativos. Desarrollada en Rust para garantizar seguridad, concurrencia y eficiencia, Argos ofrece herramientas avanzadas para administradores de sistemas, ingenieros de DevOps y equipos de seguridad. Su arquitectura modular soporta interfaces CLI y TUI, con planes para integrar una API REST y una interfaz web, facilitando el monitoreo de procesos, detección de anomalías, auditoría histórica y optimización de recursos en entornos críticos.
+
+{{< pagebreak >}}
+
+## Introducción
+
+En el entorno actual de infraestructura crítica, el monitoreo continuo y el análisis detallado de recursos son esenciales para garantizar rendimiento, seguridad y trazabilidad. Argos aborda estas necesidades mediante una plataforma unificada que combina:
+
+- **Monitoreo en tiempo real**: Visualización de métricas de CPU, memoria, I/O y red por proceso.
+- **Auditoría histórica**: Registro completo para análisis forense y optimización.
+- **Detección de anomalías**: Identificación proactiva de comportamientos inusuales.
+- **Extensibilidad**: Diseño modular compatible con Windows, Linux y macOS.
+
+El núcleo de Argos se apoya en la biblioteca sysinfo, que actúa como el motor principal para la recolección de métricas del sistema y de los procesos.
+La elección de sysinfo responde a su robustez, eficiencia y, sobre todo, a su capacidad de operar de manera uniforme en múltiples sistemas operativos, permitiendo que Argos ofrezca una experiencia consistente y confiable tanto en entornos Windows, Linux como macOS.
+
+Gracias a sysinfo, Argos puede acceder a información detallada sobre procesos, uso de CPU y memoria, actividad de disco, red y usuarios, garantizando una visión integral y precisa del estado del sistema.
+Esta base tecnológica facilita la trazabilidad, el análisis histórico y la exportación de datos, posicionando a Argos como una solución integral para entornos que van desde estaciones de trabajo individuales hasta centros de datos distribuidos.
+
+{{< pagebreak >}}
+
+## Objetivos
+
+### Objetivo General
+
+Desarrollar un sistema multiplataforma de supervisión y auditoría que facilite el análisis de eficiencia, trazabilidad y optimización del rendimiento de software, basado en conceptos de sistemas operativos (gestión de procesos, memoria, CPU, sistemas de archivos).
+
+### Objetivos Específicos
+
+- Monitoreo de procesos: Listar, observar en vivo y muestrear procesos con métricas detalladas (CPU, memoria, estado, usuario).
+- Comparación y análisis: Comparar rendimiento entre ejecuciones o procesos para identificar variaciones.
+- Exportación de datos: Generar reportes en formatos como CSV, JSON y XML.
+- Auditoría histórica: Registrar métricas continuas para análisis longitudinal.
+- Extensibilidad: Diseñar una arquitectura modular para futuras integraciones (TUI, GUI, dashboards web).
+- Notificaciones proactivas: Implementar alertas basadas en umbrales configurables.
+
+{{< pagebreak >}}
+
+## Arquitectura
+La arquitectura de Argos fue concebida bajo el principio de modularidad y reutilización. Cada comando no es un bloque aislado, sino una extensión de un núcleo común. Por ejemplo, monitor constituye la base de la observación de procesos; sobre él se construyen sample (muestreo temporal) y live (seguimiento continuo). De manera análoga, list funciona como el inventario principal de procesos, del cual se derivan family (exploración jerárquica) y compare (contraste entre procesos). Esta interdependencia refuerza la coherencia del diseño y permite ampliar funcionalidades sin duplicar lógica.
+
+Argos se basa en una arquitectura modular que incluye:
+
+- Argos-core: Biblioteca central para recolección de métricas y lógica de negocio.
+- CLI: Interfaz de línea de comandos con comandos como monitor, sample, list, history, compare, watchdog, tag y family.
+- TUI: Interfaz interactiva basada en ratatui con dashboards y gráficos ASCII.
+- Módulo de Exportación: Soporte para JSON, CSV, XML, Parquet e InfluxDB.
+
+![](images/architecture.png){fig-align="center" width=600}
+
+
+### Tecnologías
+
+- **Backend:** Rust (sysinfo, clap).
+- **Frontend:** Rust (ratatui), extensible.
+
+{{< pagebreak >}}
+
+## Requerimientos
+
+### Requerimientos Funcionales
+
+- RF1: Monitoreo en tiempo real de métricas de procesos (CPU%, memoria, estado, puertos).
+- RF2: Registro de eventos (creación, terminación, cambios de estado) con consultas históricas.
+- RF3: Detección de anomalías con umbrales configurables.
+- RF4: Exportación de datos en múltiples formatos y generación de reportes.
+- RF5: Control granular de procesos (suspender, reanudar, terminar, priorizar).
+- RF6: Interfaces CLI, TUI, y futura API REST/web.
+
+### Requerimientos No Funcionales
+
+- **Rendimiento:** Overhead < 2% CPU, < 100 MB RAM; latencia < 100 ms.
+- **Seguridad:** Cifrado TLS 1.3, cumplimiento con ISO 27001, GDPR, SOX.
+- **Escalabilidad:** Soporte para 1 a 100,000+ procesos en modo distribuido.
+- **Compatibilidad:** Windows 10+, Linux (kernel 4.0+), macOS 10.14+.
+
+### Requisitos del Sistema
+
+| Aspecto   | Mínimos                        | Recomendados                      |
+|-----------|-------------------------------|-----------------------------------|
+| CPU       | 2 núcleos @ 1.8 GHz           | 4+ núcleos @ 2.4 GHz              |
+| RAM       | 2 GB                          | 4+ GB                             |
+| Disco     | 1 GB                          | 2 GB                              |
+| SO        | Windows 10+, Linux (kernel 4.0+), macOS 10.14+ | Igual que mínimos         |
+
+{{< pagebreak >}}
+
+## Funcionalidades Principales
+
+![](images/functions.png){fig-align="center" height=400}
+
+### Monitoreo en tiempo real
+
+- Comandos: monitor (snapshot), sample (muestreo), list (procesos activos), live (actualización continua).
+- Métricas: PID, CPU%, memoria física/virtual, archivos abiertos, conexiones de red.
+- Filtros avanzados: Regex, rangos (CPU > 80%), usuario, estado.
+
+### Auditoría histórica
+
+- Registro de eventos: Creación/terminación de procesos, picos de recursos, cambios de permisos.
+
+### Exportación y análisis
+
+- Formatos: CSV, JSON, txt.
+
+
+### Interfaces
+
+- CLI: Autocompletado, scripting, comandos como `argos monitor --pid 1234 --format csv`.
+- TUI: Dashboards interactivos, gráficos ASCII, navegación por teclado.
+- Futuras: API REST, interfaz web con D3.js y WebSockets.
+
+![](images/cli-help.png){fig-align="center" width=500}
+
+{{< pagebreak >}}
+
+## Ejemplos Visuales
+
+### Listado de procesos
+
+Visualización de procesos activos con métricas clave.  
+Ejemplo: `argos list --top 10 --sort-by memory`.
+
+![](images/list-help.png){fig-align="center" width=500}
+![](images/list-example.png){fig-align="center" width=600 height=300}
+
+### Monitoreo de un proceso
+
+Snapshot detallado de un proceso específico.  
+Ejemplo: `argos monitor --pid 9324`.
+
+![](images/monitor-help.png)
+![](images/monitor-example.png){fig-align="center" width=500}
+
+{{< pagebreak >}}
+
+### Muestreo
+
+Análisis temporal de un proceso durante varios segundos.  
+Ejemplo: `argos sample --pid 18044`.
+
+![](images/sample-help.png){fig-align="center" width=500}
+![](images/sample-example.png){fig-align="center" width=500}
+
+{{< pagebreak >}}
+
+### Interfaz TUI
+
+#### Navegación de procesos.
+La interfaz TUI de Argos permite explorar de manera interactiva la lista de procesos activos del sistema, mostrando información relevante y actualizada en tiempo real.
+Cada proceso se presenta en una tabla con los siguientes campos:
+
+`PID`: Identificador único del proceso en el sistema.
+`Nombre`: Nombre del ejecutable o comando asociado al proceso.
+`CPU %`: Porcentaje de uso de CPU en el instante actual.
+`Memoria`: Cantidad de memoria física utilizada (MB).
+`Usuario`: Usuario propietario del proceso.
+`Estado`: Estado actual del proceso (ejecutando, suspendido, zombie, etc.).
+`Lectura Disco`: Volumen de datos leídos por el proceso (MB/s).
+`Escritura Disco`: Volumen de datos escritos por el proceso (MB/s).
+`Inicio`: Fecha y hora de inicio del proceso.
+`PID Padre`: Identificador del proceso padre (si existe).
+`Memoria Virtual`: Cantidad de memoria virtual asignada (MB).
+
+La navegación se realiza mediante el teclado, permitiendo desplazarse por la lista, buscar procesos por nombre o usuario, y aplicar filtros dinámicos.
+La tabla se actualiza automáticamente, reflejando cambios en el estado, recursos y actividad de cada proceso.
+Esta vista facilita la identificación de procesos críticos, el monitoreo de recursos y la toma de decisiones sobre la gestión y optimización del sistema.
+
+
+![](images/tui.png){fig-align="center" width=600}
+
+#### Detalles de un proceso
+
+La vista de detalles en la TUI de Argos permite analizar en profundidad el comportamiento de cualquier proceso seleccionado. Para cada proceso, se muestran métricas históricas y estadísticas avanzadas, calculadas en tiempo real y presentadas de forma clara y visual.
+
+**Métricas presentadas:**
+
+- **CPU:**
+  - Historial de uso porcentual de CPU.
+  - Estadísticas: media, mediana, desviación estándar, mínimo, máximo, percentil 95 y sesgo.
+  - Algoritmo de tendencia: se calcula la pendiente de la regresión lineal sobre el historial, permitiendo identificar si el uso de CPU está aumentando, disminuyendo o es estable.
+  - Predicción: se estima el próximo valor esperado de uso de CPU.
+
+- **Memoria:**
+  - Historial de consumo de memoria (MB).
+  - Estadísticas: media, mediana, desviación estándar, mínimo, máximo, percentil 95 y sesgo.
+  - Tendencia: análisis de la evolución del consumo de memoria, útil para detectar fugas o picos inesperados.
+  - Predicción: estimación del próximo valor de memoria.
+
+- **Disco:**
+  - Historial de operaciones de lectura y escritura (MB/s).
+  - Estadísticas separadas para lectura y escritura: media, mediana, desviación estándar, mínimo, máximo, percentil 95 y sesgo.
+  - Tendencia: permite identificar patrones de acceso a disco, como cargas intensivas o periodos de inactividad.
+  - Predicción: próximo valor esperado de actividad de disco.
+
+**Análisis estadístico:**
+
+Para cada métrica, Argos calcula y muestra:
+- **Media y mediana:** valores centrales del historial.
+- **Desviación estándar:** variabilidad de la métrica.
+- **Mínimo y máximo:** extremos observados.
+- **Percentil 95:** valor por debajo del cual se encuentra el 95% de las muestras.
+- **Sesgo (skewness):** indica si la distribución de los valores está inclinada hacia valores altos o bajos.
+- **Tendencia:** pendiente de la regresión lineal, útil para anticipar comportamientos futuros.
+- **Predicción:** estimación del próximo valor, basada en el modelo de tendencia.
+
+**Utilidad práctica:**
+- El usuario puede identificar rápidamente procesos problemáticos, tendencias de consumo anómalo, picos de actividad o posibles fugas de recursos.
+- El análisis estadístico detallado permite tomar decisiones informadas sobre la gestión de procesos y recursos, facilitando la optimización y la prevención de incidentes.
+
+![](images/tui-detail.png){fig-align="center" width=600}
+
+{{< pagebreak >}}
+
+## Roadmap de Implementación
+
+### Completados
+
+- Núcleo de monitoreo:
+Recolecta métricas de todos los procesos activos del sistema en tiempo real, utilizando técnicas eficientes y seguras para minimizar el impacto en el rendimiento.
+
+- CLI y TUI:
+Proveen interfaces interactivas y de línea de comandos para consultar, filtrar y visualizar la información de procesos, recursos y eventos.
+La TUI incluye dashboards, metricas descriptivas, algoritmos de tendencias y navegación por teclado.
+
+- Módulo de exportación:
+Permite generar archivos en formatos estándar y enviar datos a sistemas externos.
+
+### En desarrollo futuro
+- Módulo de auditoría automatizada:
+Registra y almacena todos los eventos relevantes en una base de datos local, permitiendo consultas históricas y generación de reportes.
+
+- Gestión de procesos:
+El usuario puede suspender, reanudar, terminar o cambiar la prioridad de cualquier proceso desde la interfaz.
+
+{{< pagebreak >}}
+
+## Puntos de Mejora
+
+- Persistencia: Implementar SQLite para historial completo.
+- CLI avanzada: Completar subcomandos watchdog, history, tag.
+- TUI: Agregar filtros dinámicos y gráficos en tiempo real.
+- Alertas: Configuración avanzada de umbrales y notificaciones.
+- Integración: Desarrollar API REST y paneles web.
+
+
+## Consideraciones Técnicas
+
+Durante el desarrollo, se aplicaron conceptos de sincronización, planificación de procesos y administración de recursos estudiados en la asignatura de Sistemas Operativos II. Argos no solo funciona como herramienta práctica, sino también como un laboratorio de experimentación, donde se tradujeron fundamentos teóricos en software real, eficiente y portable.
+
+### Rendimiento objetivo
+
+- Overhead: < 2% CPU, < 100 MB RAM.
+- Latencia: < 100 ms para consultas simples.
+- Throughput: > 10,000 eventos/segundo.
+
+### Despliegue
+
+Argos se distribuye como un binario único para cada sistema operativo soportado (Windows, Linux, macOS). La instalación es sencilla y no requiere dependencias externas: basta con descargar el ejecutable y ejecutarlo. La configuración se realiza mediante archivos YAML o directamente desde la CLI, permitiendo adaptar el comportamiento del sistema a las necesidades del entorno.
+
+## Costos y Requerimientos de Infraestructura
+
+- **Hardware:** Compatible con equipos de gama baja (2 núcleos, 2 GB RAM) y alta.
+- **Software:** Licencia de código abierto, costo de desarrollo mínimo.
+- **Mantenimiento:** Revisión trimestral, actualizaciones automáticas.
+
+{{< pagebreak >}}
+
+## Conclusión
+
+Argos es una solución consolidada para la supervisión y auditoría de sistemas, que ya integra monitoreo en tiempo real, análisis histórico y detección de anomalías en una plataforma modular y eficiente. Gracias a su núcleo desarrollado en Rust, el sistema garantiza rendimiento óptimo, seguridad robusta y portabilidad multiplataforma, permitiendo su uso tanto en estaciones de trabajo como en infraestructuras empresariales.
+
+El usuario dispone de potentes herramientas para el análisis detallado de procesos, con métricas avanzadas y trazabilidad completa de eventos. La exportación flexible en formatos como CSV, JSON y TXT facilita la integración con sistemas externos, el procesamiento en hojas de cálculo y la generación de reportes personalizados. La auditoría histórica y la correlación de datos permiten reconstruir la actividad de cualquier proceso, identificar patrones de uso y anticipar incidentes, aportando valor tanto en la operación diaria como en el análisis forense.
+
+La arquitectura modular de Argos permite ampliar el alcance del monitoreo más allá de los procesos, incorporando información sobre usuarios, red, almacenamiento y otros recursos del sistema, aprovechando las capacidades de sysinfo y otras fuentes de datos. Además, el diseño del sistema facilita la integración con nuevas interfaces, como paneles web, aplicaciones GUI y APIs REST, abriendo la puerta a escenarios de visualización avanzada, automatización y orquestación.
+
+En síntesis, Argos no solo ofrece visibilidad y control sobre los recursos del sistema, sino que proporciona una base sólida para el análisis predictivo, la optimización de recursos y la evolución hacia entornos de monitoreo e integración cada vez más completos y escalables.
+
+{{< pagebreak >}}
+
+## Referencias
+
+[1] IEEE Std 1016-2009, _IEEE Standard for Information Technology—Systems Design—Software Design Descriptions_, IEEE, Piscataway, NJ, USA, 2009.
+
+[2] IEEE Std 830-1998, _IEEE Recommended Practice for Software Requirements Specifications_, IEEE, Piscataway, NJ, USA, 1998.
+
+[3] G. Gomez, “sysinfo: Cross-platform library to fetch system information,” docs.rs, 2023. [Online]. Available: https://docs.rs/sysinfo.
+
+[4] Ratatui Development Team, “ratatui: Rust library for building rich terminal user interfaces,” docs.rs, 2023. [Online]. Available: https://docs.rs/ratatui.
+
+[5] Clap Development Team, “clap: Command Line Argument Parser for Rust,” docs.rs, 2023. [Online]. Available: https://docs.rs/clap.
+
+[6] A. Castillo, “Documentación ERS de Argos,” Internal Project Documentation, Universidad Tecnologica La Salle, Leon, Nicaragua, 2025.
